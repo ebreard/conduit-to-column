@@ -47,7 +47,7 @@ Measured throughput: 5,656 MAMMA runs per node-hour; PLUME-MoM-TSM at 0.13 s per
 
 ## How each emulator was trained
 
-All are small feedforward networks, `tanh` hidden layers and a linear output, with inputs standardised to zero mean and unit variance before the first layer. Weights ship as plain JSON inside the page, so inference is a few dozen multiply-adds in JavaScript, no runtime or library needed.
+All are small feedforward networks, `tanh` hidden layers and a linear output, with inputs standardised to zero mean and unit variance before the first layer. Weights ship as plain JSON inside the page, so inference is a few thousand multiply-adds in JavaScript, no runtime or library needed.
 
 **MAMMA emulator.** Thirteen input features (log10 radius, conduit length, chamber pressure over lithostatic, water content, crystal fraction, temperature, log10 melt viscosity, the Giordano B and C coefficients wet and dry, a groundwater flag, log10 country-rock permeability), predicting log10(mass eruption rate), paired with a classifier for whether a setting chokes at all. It replaced an earlier 252-run lookup table that only answered at its own grid corners. The two patched fragmentation criteria each add a fourteenth feature (the porosity threshold, or log10 of the wall-shear relaxation fraction); the wall-shear version needs a third network, a classifier between the fragmenting and non-fragmenting branches, because those are different regimes that a single smooth network would blur. Held-out error: 0.6 % (fixed criterion), 2.3 % (A1), 5.9 % / 1.7 % (A2, fragmenting / unfragmented branch).
 
