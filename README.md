@@ -4,7 +4,7 @@ A single self-contained HTML page that solves a steady 1D volcanic conduit and a
 
 ## Run it
 
-Open **https://ebreard.github.io/conduit-to-column/** in any recent browser, or download `conduit_to_column.html` and open it locally. That one file (about 6.7 MB) is the whole tool: no build step, no server, no installation. It also runs offline; without a connection the IBM Plex fonts fall back to your system fonts.
+Open **https://ebreard.github.io/conduit-to-column/** in any recent browser, or download `conduit_to_column.html` and open it locally. That one file (about 6.9 MB) is the whole tool: no build step, no server, no installation. It also runs offline; without a connection the IBM Plex fonts fall back to your system fonts.
 
 ## What it does
 
@@ -15,7 +15,7 @@ Every slider move re-solves the live physics instantly, in JavaScript, in the br
 ## Three layers, not one model
 
 1. **Live model.** A steady, 1D, two-phase (melt + exsolving gas + crystals) conduit solver and a top-hat plume model, both solved directly on every interaction. Fast because the physics is simplified (steady state, no bubble growth kinetics, equilibrium degassing), not because anything is cached or learned.
-2. **Real precomputed runs.** Actual runs of the full codes, used verbatim wherever they cover the chosen settings: 1,404 MAMMA runs on four grids (971 converged; the dashed conduit curve), 3,435 PLUME-MoM-TSM columns chained onto them at four wind speeds (the dashed plume curve; the named magmas are chained from their own volcano's summit), and a rhyolite-MELTS decompression table for the Chemistry tab's six named magmas that covers every setting of the tab's controls: five oxygen buffers, water 2-8 wt% and the whole temperature slider (1,504 of 1,704 cells converged, each pooled from six pressure ladders).
+2. **Real precomputed runs.** Actual runs of the full codes, used verbatim wherever they cover the chosen settings: 1,404 MAMMA runs on four grids (971 converged; the dashed conduit curve), 3,435 PLUME-MoM-TSM columns chained onto them at four wind speeds (the dashed plume curve; the named magmas are chained from their own volcano's summit), and a rhyolite-MELTS decompression table for the Chemistry tab's six named magmas that covers every setting of the tab's controls: five oxygen buffers, water 2-8 wt% and the whole temperature slider (1,667 of 1,704 cells converged, each pooled from 6 to 36 MELTS runs).
 3. **The emulator.** Small neural networks (called `surrogate` in the source comments; this document calls them the emulator throughout) trained on much larger HPC campaigns of the same three codes, which answer wherever the precomputed runs above do not reach, following every slider rather than only the grid corners the real runs sit on. The page always labels which of the three answered.
 
 ## The codes, briefly
@@ -41,9 +41,9 @@ All training data, and the precomputed MELTS table, came from **ARCHER2** (the U
 | PLUME-MoM-TSM, main campaign | PLUME-MoM-TSM | 15-axis Sobol | 8,388,608 columns | 8,387,871 |
 | rhyolite-MELTS 1.0.2, water only | rhyolite-MELTS | 5-axis Sobol (water, a two-parameter composition manifold, temperature, oxygen buffer) plus a 65,536-path silicic, water-rich top-up | 1,114,112 paths, 64 pressures each | 1,033,877 (92.8 %) |
 | rhyolite-MELTS 1.2.0, water + CO2 | rhyolite-MELTS | as above plus a CO2 axis, 0-5000 ppm | 1,048,576 paths | 978,916 (93.4 %) |
-| rhyolite-MELTS 1.0.2, named-magma table | rhyolite-MELTS | 6 magmas x 5 oxygen buffers x 7 water contents x up to 13 temperatures, six pressure ladders per cell | 10,224 ladders | 1,504 of 1,704 cells |
+| rhyolite-MELTS 1.0.2, named-magma table | rhyolite-MELTS | 6 magmas x 5 oxygen buffers x 7 water contents x up to 13 temperatures, six pressure ladders per cell and up to 30 more where MELTS stuck | 26,028 ladders | 1,667 of 1,704 cells |
 
-Measured throughput: 5,656 MAMMA runs per node-hour; PLUME-MoM-TSM at 0.13 s per column on one core at the median (0.40 s at the 90th percentile); the 10,224 ladders of the MELTS table took under five minutes on four nodes.
+Measured throughput: 5,656 MAMMA runs per node-hour; PLUME-MoM-TSM at 0.13 s per column on one core at the median (0.40 s at the 90th percentile); the 26,028 ladders of the MELTS table took about 16 minutes of wall clock on four to eight nodes.
 
 ## How each emulator was trained
 
@@ -61,7 +61,7 @@ Three separate checks, kept distinct rather than blended into one error bar:
 
 1. **The emulator against held-out points from its own training campaign.** The error figures quoted above are all against points the network never trained on.
 2. **The emulator against real runs it never trained on.** For the plume emulator, the 799 chained PLUME-MoM-TSM columns of the main grid, which also set the wind mapping where the page's slider ranges exceed the training box. For the chemistry emulator, 799 pressure levels of real rhyolite-MELTS run on the campaign's own composition manifold: crystal fraction within 0.009 at the median and 0.043 at the 90th percentile, viscosity within 0.13 dex at the 90th percentile.
-3. **The precomputed MELTS paths against physics.** Rhyolite-MELTS sometimes stops moving: in 19 % of the table's pressure ladders a node returns the identical state at every remaining pressure. Each ladder therefore ends where its state stops changing once crystals or a fluid are present, and any level whose melt holds more dissolved water than that magma's fluid-saturated melts do at the same pressure is dropped. Where the rebuilt table and the first 180-cell table both pass these checks they agree to 0.0004 in crystal fraction at the median.
+3. **The precomputed MELTS paths against physics.** Rhyolite-MELTS sometimes stops moving: in about a fifth of the table's first pressure ladders a node returns the same state, to the fourth decimal, at every remaining pressure. Each ladder therefore ends where its state stops changing once crystals or a fluid are present, and any level whose melt holds well over the dissolved water of that magma's fluid-saturated melts at the same pressure is dropped. Cells left thin got up to 30 more runs: finer, denser at low pressure, more strongly jittered, or started at each pressure by cooling to the target temperature, which reaches the same equilibrium from a melt-rich first guess. Where the rebuilt table and the first 180-cell table both pass these checks they agree to better than 0.001 in crystal fraction at the median.
 
 Where a network's own classifier is unsure, or where its answer would require physically impossible behaviour (dissolved water rising as pressure falls, for instance), the page shows a gap rather than a confident wrong number, and the MELTS levels dropped in check 3 show as gaps in the same way.
 
