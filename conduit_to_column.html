@@ -338,7 +338,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <div class="ctl">
         <div class="row"><label for="beta">Crystal fraction</label><span class="val" id="beta-v">0.40</span></div>
         <input type="range" id="beta" min="0" max="0.62" step="0.01" value="0.40">
-        <div class="hint" id="beta-hint">Grid runs are all at 0.40</div>
+        <div class="hint" id="beta-hint">The main 702-run grid sits here; elsewhere the crystal box answers</div>
       </div>
 
       <div class="ctl">
@@ -360,7 +360,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <div class="ctl" id="ctl-fragthr" hidden>
         <div class="row"><label for="fragthr">Porosity at fragmentation</label><span class="val" id="fragthr-v">0.80</span></div>
         <input type="range" id="fragthr" min="0.65" max="0.85" step="0.01" value="0.80">
-        <div class="hint">Roughly the range the deposits support. Watch the mass eruption rate: this moves it further than the conduit radius does.</div>
+        <div class="hint">Roughly the range the deposits support. It moves MAMMA&rsquo;s eruption rate, the second line under the tile: from 0.65 to 0.85 it falls by about 40 % at the default settings. The live model keeps fragmenting at 0.80.</div>
       </div>
 
       <div class="ctl" id="ctl-fragk" hidden>
@@ -457,7 +457,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <div class="row"><label for="sweepvar">Sweep one control</label></div>
         <select id="sweepvar">
           <option value="h2o">dissolved water, 2 to 8 wt%</option>
-          <option value="rad">conduit radius, 5 to 80 m</option>
+          <option value="rad">conduit radius, 5 to 100 m</option>
           <option value="pch">chamber pressure, 60 to 240 MPa</option>
           <option value="beta">crystal fraction, 0 to 0.62</option>
           <option value="temp">temperature, 1020 to 1320 K</option>
@@ -597,7 +597,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
     </div>
     <div>
       <h4>Precomputed reference runs</h4>
-      <p>The slate curves come from two Fortran codes that cannot run in a browser, so they were run ahead of time. <b>MAMMA</b> is a two-phase, two-pressure, two-velocity conduit solver; every converged vent state was then fed into <b>PLUME-MoM-TSM</b> at four wind speeds. Both codes are by Mattia de&rsquo; Michieli Vitturi (INGV Pisa), used here with his permission. Four separate boxes were swept: the main grid, a crystal-fraction box, a composition box run through Giordano et al. (2008), and a groundwater box using MAMMA&rsquo;s aquifer interaction. The pill above the tabs says which one is answering. Between them they answer only on their own grid corners, so a fifth source now fills the gaps: a <b>surrogate</b> trained on an ARCHER2 Sobol campaign of 1,374,424 MAMMA runs over nine axes (water, radius, length, chamber pressure, crystals, temperature, groundwater and two composition coordinates), run by Eric Breard in 118 short-queue jobs for 243 node-hours. Of the 759,350 that converged, only the 384,087 with a choked vent are learnable: the rest stop on the fragmentation discontinuity, which fixes the mass flow rate but leaves a subsonic, over-pressured exit. A 20 KB network predicts the mass eruption rate of the choked ones, and a second network says whether a given setting is in that regime at all, so the page declines to quote a number where MAMMA would not choke. Checked against ten fresh MAMMA runs at settings the network had never seen: median error 0.6 %, worst 0.9 %.</p>
+      <p>The slate curves come from two Fortran codes that cannot run in a browser, so they were run ahead of time. <b>MAMMA</b> is a two-phase, two-pressure, two-velocity conduit solver; every converged vent state was then fed into <b>PLUME-MoM-TSM</b> at four wind speeds. Both codes are by Mattia de&rsquo; Michieli Vitturi (INGV Pisa), used here with his permission. Five separate boxes were swept: the main grid, a temperature box, a crystal-fraction box, a composition box run through Giordano et al. (2008), and a groundwater box using MAMMA&rsquo;s aquifer interaction. The pill above the tabs says which one is answering. Between them they answer only on their own grid corners, so a sixth source now fills the gaps: a <b>surrogate</b> trained on an ARCHER2 Sobol campaign of 1,374,424 MAMMA runs over nine axes (water, radius, length, chamber pressure, crystals, temperature, groundwater and two composition coordinates), run by Eric Breard in 118 short-queue jobs for 243 node-hours. Of the 759,350 that converged, only the 384,087 with a choked vent are learnable: the rest stop on the fragmentation discontinuity, which fixes the mass flow rate but leaves a subsonic, over-pressured exit. A 20 KB network predicts the mass eruption rate of the choked ones, and a second network says whether a given setting is in that regime at all, so the page declines to quote a number where MAMMA would not choke. Checked against ten fresh MAMMA runs at settings the network had never seen: median error 0.6 %, worst 0.9 %.</p>
 
       <p>That first network fragments where MAMMA&rsquo;s own default does, at a fixed 0.80 gas volume fraction. Since the fragmentation criterion is the page&rsquo;s most consequential assumption and the one the natural samples most clearly contradict, MAMMA was patched to carry three more, and two further campaigns were run so the surrogate can follow them. <b>A1</b> makes the porosity threshold an input, swept over 0.65 to 0.85, roughly the range the deposits span; it is a 14-input network and its held-out error is 2.3 %. <b>A2</b> replaces porosity with a strain-rate criterion after Papale (1999) and Dingwell (1996), brittle failure when the wall shear rate reaches a given fraction of the melt&rsquo;s structural relaxation rate, swept over 10<sup>-5</sup> to 10<sup>-3</sup>; there a classifier first decides whether the flow fragments at all, at 99.6 % accuracy, and then one of two regressors answers, at 5.9 % for the fragmenting branch and 1.7 % for the unfragmented one. The threshold is not a detail: moving A1 from 0.70 to 0.85 lowers the mass eruption rate by a third at the default settings, and at 0.80 it agrees with the independent fixed-criterion network to 2 %. A fourth patched criterion, gas overpressure after Spieler et al. (2004), is implemented but inert in this build, because MAMMA&rsquo;s relaxed two-pressure closure leaves the two phases within 10<sup>-5</sup> Pa of each other.</p>
       <h4>The gas outruns the melt</h4>
@@ -796,7 +796,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <tr><td>Length</td><td>5291 m</td><td>fixed</td></tr>
         <tr><td>Temperature</td><td>1159 K; box 1023&ndash;1223 K</td><td>5</td></tr>
       </table></div>
-      <p style="margin-top:11px">Take a slider outside those ranges and the slate reference curve drops away, because there is nothing to interpolate. The live model keeps going.</p>
+      <p style="margin-top:11px">The other boxes are coarser. The temperature and crystal boxes run at three chamber pressures; the magma box steps water by 1 wt% over radii of 15, 29, 50, 80 and 100 m; the groundwater box still covers only 3.5 to 6.5 wt% and radii of 15, 30 and 50 m. Take a slider outside those ranges and the slate reference curve drops away, because there is nothing to interpolate. The live model keeps going.</p>
     </div>
   </div>
 </div>
@@ -1728,7 +1728,7 @@ let sur = null;
 let refWhy = "", refWhyKind = "", refPlumeStale = false;
 
 /* Which vent elevation the answering reference box was chained from. The generic
-   grid, the crystal box and the groundwater box were all run from 1500 m; each named
+   grid and the temperature, crystal and groundwater boxes were all run from 1500 m; each named
    magma was re-run from its own volcano's summit, because a 15 km column from Fuego's
    3763 m vent is only 11 km of plume. */
 function chainVent(){
@@ -3190,8 +3190,8 @@ function meta(extra){
   const L = [
     "# " + TITLE_LINE,
     "# generated " + new Date().toISOString().slice(0, 19).replace("T", " ") + " UTC",
-    "# live model: steady 1D, Henry solubility 4.11e-6 Pa^-0.5, Hess & Dingwell (1996) melt",
-    "#   viscosity, Costa (2005) crystals, fragmentation at gas volume fraction 0.80",
+    "# live model: steady 1D, Henry solubility 4.11e-6 Pa^-0.5, Costa (2005) crystals,",
+    "#   fragmentation at gas volume fraction 0.80, melt viscosity as listed under magma",
     "# reference: MAMMA and PLUME-MoM-TSM (M. de' Michieli Vitturi, INGV Pisa), precomputed",
     "#",
     "# water_in_melt_wt_frac = " + S.h2o.toFixed(4),
@@ -3205,8 +3205,20 @@ function meta(extra){
     "# vent_elevation_m      = " + S.zVent,
     "# magma                 = " + (S.comp === "generic"
         ? "generic rhyolite, Hess & Dingwell (1996) melt viscosity"
-        : ((COMPS[S.comp] && COMPS[S.comp].label) || S.comp)
-          + ", Giordano et al. (2008) melt viscosity"),
+        : S.comp === "custom"
+          ? "your own analysis, Giordano et al. (2008) melt viscosity" + (S.ownOx
+              ? ": " + OX_NAMES.map((n, i) => n + " " + S.ownOx[i]).join(", ") : "")
+          : ((COMPS[S.comp] && COMPS[S.comp].label) || S.comp)
+            + ", Giordano et al. (2008) melt viscosity"),
+    "# crystallisation       = " + (S.cryst > 0
+        ? Math.round(100*S.cryst) + "% of the MELTS equilibrium increase on the way up"
+        : "off, crystals frozen at the chamber value"),
+    "# oxygen_buffer         = " + ["FMQ-2", "FMQ-1", "FMQ", "FMQ+1", "FMQ+2"][S.fo2],
+    "# melts_calibration     = " + (S.meltsCal === "co2"
+        ? "MELTS 1.2.0, water and CO2, " + S.co2 + " ppm CO2" : "rhyolite-MELTS 1.0.2, water only"),
+    "# mamma_fragmentation   = " + (S.fragMode === "a1" ? "porosity " + S.fragThr.toFixed(2)
+        : S.fragMode === "a2" ? "brittle failure at the wall shear rate, k = " + S.fragK.toExponential(1)
+        : "porosity 0.80") + " (moves the MAMMA reference, not the live model)",
     "# groundwater_influx    = " + (S.influx > 0
         ? (2*Math.PI*S.R*S.influx).toPrecision(4) + " kg/s entering 300-1000 m below the vent" : "none"),
     "# mamma_dataset_in_use  = " + (ref ? ref.label : "none, live model only"),
@@ -3360,7 +3372,9 @@ function csvSweep(key){
   for (let k = 0; k <= N; k++){
     const v = sw.lo + (sw.hi - sw.lo)*k/N;
     sw.set(v);
-    const c = solveConduit({ xtot:S.h2o, beta:S.beta, T:S.T, R:S.R, pch:S.pch, L:S.L, bubbles:S.bubbles });
+    /* the same inputs as the tiles, so the magma, MELTS crystallisation, CO2 and any
+       groundwater stay as they were set */
+    const c = solveConduit(liveParams());
     let regime = "no_solution", pl = null;
     if (c.ok && c.explosive){
       pl = solvePlume({ mfr:c.vent.mfr, u0:c.vent.u, n0:c.vent.n, T0:S.T, zVent:S.zVent, wind:S.wind });
@@ -3419,9 +3433,16 @@ Array.prototype.forEach.call(document.querySelectorAll("button.dl"), function(bt
     else if (k === "grid"){ text = csvGrid(); name = "mamma_grid.csv"; }
     else if (k === "box"){ text = csvBox(); name = "mamma_extra_boxes.csv"; }
     else if (k === "sweep"){
-      const v = el("sweepvar").value;
-      text = csvSweep(v); name = "sweep_" + v + ".csv";
-      fmtVals(); computeAll(); render();
+      /* 61 full solves take a few seconds; show it on the button, then solve */
+      const v = el("sweepvar").value, label = btn.textContent;
+      btn.disabled = true; btn.textContent = "Solving 61 states, a few seconds";
+      setTimeout(function(){
+        let t = null;
+        try { t = csvSweep(v); }
+        finally { fmtVals(); computeAll(); render(); btn.disabled = false; btn.textContent = label; }
+        if (t) saveCsv("sweep_" + v + ".csv", t);
+      }, 60);
+      return;
     }
     if (!text){ showCsv(name, "", "There is nothing to export from this state: the conduit has no steady explosive solution, so there is no profile to write."); return; }
     saveCsv(name, text);
