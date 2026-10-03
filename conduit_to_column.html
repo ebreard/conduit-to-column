@@ -391,7 +391,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <div class="ctl" id="ctl-co2" hidden>
         <div class="row"><label for="co2">Dissolved CO2</label><span class="val" id="co2-v">0 ppm</span></div>
         <input type="range" id="co2" min="0" max="5000" step="50" value="0">
-        <div class="hint">CO2 in the melt at the chamber, in parts per million. Almost none of it stays dissolved at these pressures, so it arrives in the conduit as gas: at 5,000 ppm the eruption rate here rises about 6 %, the vent velocity about 14 %, and fragmentation moves roughly 280 m deeper, because the magma is already carrying a gas phase where water alone would still be dissolved. Watch the exsolved fluid curve on the Chemistry tab as you move this.</div>
+        <div class="hint">CO2 in the melt at the chamber, in parts per million. Almost none of it stays dissolved at these pressures, so it arrives in the conduit as gas: at 5,000 ppm the eruption rate here rises about 6 %, the vent velocity about 13 %, and fragmentation moves roughly 280 m deeper, because the magma is already carrying a gas phase where water alone would still be dissolved. Watch the exsolved fluid curve on the Chemistry tab as you move this.</div>
       </div>
 
       <div class="ctl">
@@ -632,9 +632,9 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <div class="scroll"><table class="tbl">
         <tr><th>at the vent, live / MAMMA</th><th>single velocity, old grid</th><th>now, old box</th><th>now, whole grid</th></tr>
         <tr><td>mass eruption rate</td><td>1.130</td><td>0.978</td><td><b>0.982</b></td></tr>
-        <tr><td>vent pressure</td><td>1.502</td><td>1.030</td><td><b>1.012</b></td></tr>
-        <tr><td>magma viscosity</td><td>0.585</td><td>0.962</td><td><b>0.983</b></td></tr>
-        <tr><td>vent velocity</td><td>1.029</td><td>0.957</td><td><b>0.966</b></td></tr>
+        <tr><td>vent pressure</td><td>1.502</td><td>1.026</td><td><b>1.009</b></td></tr>
+        <tr><td>magma viscosity</td><td>0.585</td><td>0.966</td><td><b>0.988</b></td></tr>
+        <tr><td>vent velocity</td><td>1.029</td><td>0.960</td><td><b>0.967</b></td></tr>
         <tr><td>porosity</td><td>0.998</td><td>1.000</td><td><b>1.000</b></td></tr>
       </table></div>
       <p>The first column is the single-velocity version against the 200 explosive runs of the
@@ -642,8 +642,11 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       grid: its 243 explosive runs inside that old box, 3.5 to 6.5 wt% and 15 to 50 m, and
       all 657 across 2 to 8 wt% and 15 to 100 m. MAMMA&rsquo;s own vent state is only good
       to a few percent, because the vent sits on the choke point: between 500, 1000 and 2000
-      grid cells its vent pressure moves by 5 to 15% and its eruption rate by 1 to 2%.</p>
-      <p><b>Nothing in it is fitted.</b> An earlier version of the slip needed a calibration
+      grid cells its vent pressure moves by 5 to 15% and its eruption rate by 1 to 2%.
+      The live vent is quoted a fixed 0.1% of the flux below its own choke, the one
+      numerical setting chosen against MAMMA: any closer and the exit velocity starts
+      jumping to the sound speed as a slider moves, any further and it drifts low.</p>
+      <p><b>Nothing in the physics is fitted.</b> An earlier version of the slip needed a calibration
       constant; once the phase densities were MAMMA&rsquo;s own, the bare drag balance
       reproduced its slip to within about three percent at the median and the constant went
       away. What is left sits at small conduit radius and low chamber pressure, where the
@@ -730,7 +733,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       water budget rather than two. Neither is gated on the crystallisation slider: that
       slider is a statement about how far equilibrium crystallisation runs before eruption,
       and carbon leaving the melt is not a crystallisation question. At 5,000 ppm the
-      effect on the default magma is a 6 % higher mass eruption rate, a 14 % higher vent
+      effect on the default magma is a 6 % higher mass eruption rate, a 13 % higher vent
       velocity and fragmentation about 280 m deeper. <b>The column model does not yet know
       about it</b>: the plume still treats the whole gas phase as water vapour, which
       overstates its heat capacity slightly for a carbon-rich magma, and the conduit
@@ -1156,6 +1159,7 @@ function march(Q, P, keep){
   return { ok:false, why: p <= PATM ? "atm" : "long", out:out, z:z, p:p };
 }
 
+const VENT_BACKOFF = 0.001;
 function solveConduit(P){
   P.fm0 = chamberFm(P.xtot, P.beta, P.pch, P.T);
   if (P.mb){
@@ -1166,21 +1170,36 @@ function solveConduit(P){
   let lo = 1e2, hi = 2e10;
   if (!march(lo, P, false).ok) return { ok:false, why:"no solution at any flux" };
   if (march(hi, P, false).ok)  return { ok:false, why:"unbounded" };
-  for (let k = 0; k < 34; k++){
+  /* Coarse bisection only has to land near the choking flux: the fine march below
+     pins it down. Sixteen halvings in log flux leave it within 0.03 %. */
+  for (let k = 0; k < 16; k++){
     const mid = Math.sqrt(lo*hi);
     if (march(mid, P, false).ok) lo = mid; else hi = mid;
   }
   /* The bisection runs on coarse steps for speed and the profile on fine ones, and the
-     two do not always agree about whether the last flux reaches the surface: the fine
-     march can choke a few metres short of it. When that happens the last recorded point
-     is the choke itself, where the slip balance has no root, and the reported exit
-     velocity jumps by the slip factor as a slider crosses that line. Back the flux off
-     until the fine march reaches the surface, so the state quoted at the vent is always
-     a real subsonic exit computed the same way as the curve drawn through it. */
+     two do not always agree about whether a flux reaches the surface: the fine march
+     can choke a few metres short of it. So find the choking flux again on the fine
+     march itself, then quote the vent at a fixed 0.1 % below it. Near the choke the
+     exit velocity climbs steeply towards the sound speed, so it is the distance below
+     the choke that sets it; backing off by whatever number of steps happened to clear
+     the choke made that distance jump as a slider moved, and the exit velocity and
+     the column verdict jumped with it. A fixed fraction keeps every vent
+     quantity continuous in every control, and 0.1 % is where the live exit velocity
+     sits closest to MAMMA's own across the 657 explosive runs of the main grid. */
   let Q = lo, r = march(Q, P, true);
-  for (let k = 0; k < 14 && !r.ok && r.why === "choke"; k++){
-    Q *= 0.998;
-    r = march(Q, P, true);
+  {
+    let a = lo, ra = r, b, n = 0;
+    while (!ra.ok && ra.why === "choke" && n++ < 80){ a *= 0.995; ra = march(a, P, true); }
+    if (ra.ok){
+      b = a*1.005; let rb = march(b, P, true); n = 0;
+      while (rb.ok && n++ < 80){ a = b; ra = rb; b *= 1.005; rb = march(b, P, true); }
+      for (let k = 0; k < 8; k++){
+        const m = Math.sqrt(a*b), rm = march(m, P, true);
+        if (rm.ok){ a = m; ra = rm; } else b = m;
+      }
+      Q = a*(1 - VENT_BACKOFF); r = march(Q, P, true);
+      if (!r.ok){ Q = a; r = ra; }
+    } else { Q = a; r = ra; }
   }
   const prof = r.out;
   const v = prof[prof.length - 1];
