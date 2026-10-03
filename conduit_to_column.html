@@ -516,6 +516,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <span><i style="border-color:var(--slate); border-top-style:dashed"></i>MAMMA (de&rsquo; Michieli Vitturi)</span>
         <span><i style="border-color:var(--crimson); border-top-style:dotted"></i>fragmentation, porosity 0.80</span>
       </div>
+      <p class="hint" id="melt-readout" style="margin:10px 0 0"></p>
     </section>
 
     <section class="panel" id="p-column" role="tabpanel" aria-labelledby="tab-column" hidden>
@@ -1063,13 +1064,17 @@ function slipOf(s, rhoMix, dpdz, T){
   const cGas = Math.sqrt(GAM_GAS*RGAS*T);
   return -Math.min(d, cGas);                             /* d < 0: gas leads */
 }
-function mixVisc(s, u, P){
+function meltViscAt(s, P){
   let mm = P.ox ? giordano(P.ox, 100*s.xd, P.T) : meltVisc(100*s.xd, P.T);
   if (s.mel && P.cryst > 0){
     /* interpolate in log viscosity so cryst = 0 is exactly the frozen model */
     const lf = Math.log10(mm), lm = s.mel.lvisc;
     mm = Math.pow(10, lf + P.cryst*(lm - lf));
   }
+  return mm;
+}
+function mixVisc(s, u, P){
+  const mm = meltViscAt(s, P);
   let mu = mm * thetaCry(s.beta != null ? s.beta : P.beta);
   if (P.bubbles) mu *= thetaBub(s.alfa, mm, 4*u/P.R);
   return mu;
@@ -1136,7 +1141,8 @@ function march(Q, P, keep){
     return { dzdp:dzdp, M2:M2, s:s, sl:sl, u:sl.u, mu:mu, add:add };
   };
   const rec = function(k, pp, zz){
-    out.push({ depth: P.L - zz, p:pp, u:k.u, alfa:k.sl.alfa, mu:k.mu, rho:k.sl.rho,
+    out.push({ depth: P.L - zz, p:pp, u:k.u, alfa:k.sl.alfa, mu:k.mu, melt:meltViscAt(k.s, P),
+               rho:k.sl.rho,
                slip: k.sl.u1 > 0 ? k.sl.u2/k.sl.u1 : 1,
                M: Math.sqrt(k.M2 > 0 ? k.M2 : 0) });
   };
@@ -2102,6 +2108,12 @@ function panelConduit(){
     xlog:true, xlab:"Pa s", xfmt:logfmt,
     series:[ rv && { x:rv, y:rd, color:sl, dash:[5,4], width:1.6 },
              { x:vx, y:d, color:emb } ] }));
+  const mr = el("melt-readout");
+  if (mr) mr.innerHTML = prof
+    ? "Melt viscosity in the live model: " + sci(prof[0].melt, 2) + " Pa s in the chamber, "
+      + sci(prof[prof.length - 1].melt, 2) + " Pa s at the vent, where the water has left the melt."
+      + " The mixture viscosity chart is the whole magma, crystals included."
+    : "";
 }
 
 function panelColumn(){
@@ -3235,20 +3247,32 @@ function num(v, d){
 
 function csvConduit(){
   if (!live.ok) return null;
-  const rows = ["source,depth_m,pressure_Pa,velocity_ms,gas_vol_frac,viscosity_Pas,mach"];
+  const rows = ["source,depth_m,pressure_Pa,velocity_ms,gas_vol_frac,viscosity_Pas,melt_viscosity_Pas,mach"];
   const p = live.prof, step = Math.max(1, Math.round(p.length/300));
   for (let i = 0; i < p.length; i += step)
     rows.push("live," + num(p[i].depth) + "," + num(p[i].p) + "," + num(p[i].u) + ","
-              + num(p[i].alfa) + "," + num(p[i].mu) + "," + num(p[i].M));
+              + num(p[i].alfa) + "," + num(p[i].mu) + "," + num(p[i].melt) + "," + num(p[i].M));
   if (ref){
     const zg = ZG, rp = blendProfile(ref.cs, "p", true, zg), ru = blendProfile(ref.cs, "u", false, zg),
           ra = blendProfile(ref.cs, "a", false, zg), rv = blendProfile(ref.cs, "v", true, zg);
     if (rp) for (let k = zg.length - 1; k >= 0; k--)
       rows.push("mamma," + num(AX.L_m - zg[k]) + "," + num(rp[k]) + "," + num(ru[k]) + ","
-                + num(ra[k]) + "," + num(rv[k]) + ",");
+                + num(ra[k]) + "," + num(rv[k]) + ",,");
   }
+  const v = live.vent;
+  const regime = !live.explosive ? "effusive" : plume && plume.collapsed ? "collapse" : "buoyant_column";
   return meta(["depth_m is measured downward from the vent; the chamber is at depth = conduit_length_m",
-               "mach is the live model only; MAMMA columns are blank where the state is outside the precomputed box"])
+               "viscosity_Pas is the whole magma; melt_viscosity_Pas is the melt alone, live model only",
+               "mach is the live model only; MAMMA columns are blank where the state is outside the precomputed box",
+               "results of the live model for these settings:",
+               "  regime                     = " + regime,
+               "  mass_eruption_rate_kgs     = " + num(v.mfr),
+               "  exit_velocity_ms           = " + num(v.u),
+               "  vent_pressure_Pa           = " + num(v.p),
+               "  fragmentation_depth_m      = " + (live.fragDepth == null ? "none" : num(live.fragDepth)),
+               "  melt_viscosity_chamber_Pas = " + num(p[0].melt),
+               "  melt_viscosity_vent_Pas    = " + num(p[p.length - 1].melt),
+               "  column_top_m_asl           = " + (!plume ? "none" : plume.collapsed ? "collapses" : num(plume.top))])
          + rows.join("\n") + "\n";
 }
 
