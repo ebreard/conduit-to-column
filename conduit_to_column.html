@@ -3353,18 +3353,23 @@ function csvBox(){
   return meta(notes) + rows.join("\n") + "\n";
 }
 
+/* each control steps in a round unit of its own: 0.1 wt%, 3 MPa, 0.01, 5 K, 2.5 m, 100 m */
 const SWEEPS = {
-  h2o:  { label:"dissolved water",  lo:0.020, hi:0.080, unit:"wt_frac", set:v => S.h2o = v },
-  pch:  { label:"chamber pressure", lo:6e7,   hi:2.4e8, unit:"Pa",      set:v => S.pch = v },
-  beta: { label:"crystal fraction", lo:0.0,   hi:0.62,  unit:"vol_frac",set:v => S.beta = v },
-  temp: { label:"temperature",      lo:1020,  hi:1320,  unit:"K",       set:v => S.T = v },
-  rad:  { label:"conduit radius",   lo:5,     hi:100,   unit:"m",       set:v => S.R = v },
-  len:  { label:"conduit length",   lo:2000,  hi:9000,  unit:"m",       set:v => S.L = v },
+  h2o:  { label:"dissolved water",  lo:0.020, hi:0.080, step:0.001, unit:"wt_frac", set:v => S.h2o = v },
+  pch:  { label:"chamber pressure", lo:6e7,   hi:2.4e8, step:3e6,   unit:"Pa",      set:v => S.pch = v },
+  beta: { label:"crystal fraction", lo:0.0,   hi:0.62,  step:0.01,  unit:"vol_frac",set:v => S.beta = v },
+  temp: { label:"temperature",      lo:1020,  hi:1320,  step:5,     unit:"K",       set:v => S.T = v },
+  rad:  { label:"conduit radius",   lo:5,     hi:100,   step:2.5,   unit:"m",       set:v => S.R = v },
+  len:  { label:"conduit length",   lo:2000,  hi:9000,  step:100,   unit:"m",       set:v => S.L = v },
 };
+function sweepCount(key){
+  const sw = SWEEPS[key];
+  return Math.round((sw.hi - sw.lo)/sw.step) + 1;
+}
 function csvSweep(key){
   const sw = SWEEPS[key];
   const keep = { h2o:S.h2o, pch:S.pch, beta:S.beta, T:S.T, R:S.R, L:S.L };
-  const N = 60;
+  const N = sweepCount(key) - 1;
   const rows = ["swept_variable,value_" + sw.unit + ","
               + "regime,mass_eruption_rate_kgs,vent_velocity_ms,vent_pressure_Pa,"
               + "vent_gas_vol_frac,vent_gas_mass_frac,vent_viscosity_Pas,fragmentation_depth_m,"
@@ -3391,7 +3396,8 @@ function csvSweep(key){
   }
   S.h2o = keep.h2o; S.pch = keep.pch; S.beta = keep.beta; S.T = keep.T; S.R = keep.R; S.L = keep.L;
   return meta([sw.label + " swept from " + num(sw.lo) + " to " + num(sw.hi) + " " + sw.unit
-               + " in " + N + " steps, every other control held at the value listed above",
+               + " in steps of " + num(sw.step) + ", " + (N + 1) + " states, every other control"
+               + " held at the value listed above",
                "regime: buoyant_column | collapse | effusive | no_solution",
                "all rows are the live browser model, not MAMMA"])
          + rows.join("\n") + "\n";
@@ -3435,7 +3441,7 @@ Array.prototype.forEach.call(document.querySelectorAll("button.dl"), function(bt
     else if (k === "sweep"){
       /* 61 full solves take a few seconds; show it on the button, then solve */
       const v = el("sweepvar").value, label = btn.textContent;
-      btn.disabled = true; btn.textContent = "Solving 61 states, a few seconds";
+      btn.disabled = true; btn.textContent = "Solving " + sweepCount(v) + " states, a few seconds";
       setTimeout(function(){
         let t = null;
         try { t = csvSweep(v); }
@@ -3448,6 +3454,13 @@ Array.prototype.forEach.call(document.querySelectorAll("button.dl"), function(bt
     saveCsv(name, text);
   });
 });
+/* the sweep button says how many states the chosen control will solve */
+function syncSweepLabel(){
+  document.querySelector('button.dl[data-k="sweep"]').textContent =
+    "Export " + sweepCount(el("sweepvar").value) + " solved states";
+}
+el("sweepvar").addEventListener("change", syncSweepLabel);
+syncSweepLabel();
 </script>
 <script>
 /* ======================== hover explanations ========================
