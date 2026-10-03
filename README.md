@@ -4,7 +4,7 @@ A single self-contained HTML page that solves a steady 1D volcanic conduit and a
 
 ## Run it
 
-Open **https://ebreard.github.io/conduit-to-column/** in any recent browser, or download `conduit_to_column.html` and open it locally. That one file (about 12.5 MB) is the whole tool: no build step, no server, no installation. It also runs offline; without a connection the IBM Plex fonts fall back to your system fonts.
+Open **https://ebreard.github.io/conduit-to-column/** in any recent browser, or download `conduit_to_column.html` and open it locally. That one file (about 13 MB) is the whole tool: no build step, no server, no installation. It also runs offline; without a connection the IBM Plex fonts fall back to your system fonts.
 
 ## What it does
 
@@ -15,7 +15,7 @@ Every slider move re-solves the live physics instantly, in JavaScript, in the br
 ## Three layers, not one model
 
 1. **Live model.** A steady, 1D, two-phase (melt + exsolving gas + crystals) conduit solver and a top-hat plume model, both solved directly on every interaction. Fast because the physics is simplified (steady state, no bubble growth kinetics, equilibrium degassing), not because anything is cached or learned.
-2. **Real precomputed runs.** Actual runs of the full codes, used verbatim wherever they cover the chosen settings: 4,608 MAMMA runs on five grids (3,924 converged; the dashed conduit curve), 15,168 PLUME-MoM-TSM columns chained onto them at four wind speeds (the dashed plume curve; the named magmas are chained from their own volcano's summit), and a rhyolite-MELTS decompression table for the Chemistry tab's six named magmas that covers every setting of the tab's controls: five oxygen buffers, water 2-8 wt% and the whole temperature slider (1,667 of 1,704 cells converged, each pooled from 6 to 36 MELTS runs).
+2. **Real precomputed runs.** Actual runs of the full codes, used verbatim wherever they cover the chosen settings: 5,022 MAMMA runs on five grids (4,234 converged; the dashed conduit curve), 16,088 PLUME-MoM-TSM columns chained onto them at four wind speeds (the dashed plume curve; the named magmas are chained from their own volcano's summit), and a rhyolite-MELTS decompression table for the Chemistry tab's six named magmas that covers every setting of the tab's controls: five oxygen buffers, water 2-8 wt% and the whole temperature slider (1,667 of 1,704 cells converged, each pooled from 6 to 36 MELTS runs).
 3. **The emulator.** Small neural networks (called `surrogate` in the source comments; this document calls them the emulator throughout) trained on much larger HPC campaigns of the same three codes, which answer wherever the precomputed runs above do not reach, following every slider rather than only the grid corners the real runs sit on. The page always labels which of the three answered.
 
 ## The codes, briefly
