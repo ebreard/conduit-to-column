@@ -348,6 +348,12 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       </div>
 
       <div class="ctl">
+        <div class="row"><label for="phim">Crystals jam at</label><span class="val" id="phim-v">0.60</span></div>
+        <input type="range" id="phim" min="0.40" max="0.70" step="0.01" value="0.60">
+        <div class="hint" id="phim-hint">Crystal volume fraction at which the crystals lock together. Reach it before the magma fragments and it stops flowing.</div>
+      </div>
+
+      <div class="ctl">
         <div class="row"><label for="fragmode">Fragmentation criterion</label><span class="val" id="fragmode-v">porosity 0.80</span></div>
         <select id="fragmode">
           <option value="fixed" selected>Porosity 0.80, the campaign default</option>
@@ -460,6 +466,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
           <option value="rad">conduit radius, 5 to 100 m</option>
           <option value="pch">chamber pressure, 60 to 240 MPa</option>
           <option value="beta">crystal fraction, 0 to 0.62</option>
+          <option value="cryst">crystallisation on the way up, 0 to 100%</option>
           <option value="temp">temperature, 1020 to 1320 K</option>
           <option value="len">conduit length, 2 to 9 km</option>
         </select>
@@ -566,9 +573,9 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <div class="legend">
         <span><i style="border-color:var(--slate)"></i>MELTS at equilibrium: crystals, dissolved water, melt viscosity</span>
         <span><i style="border-color:var(--ember)"></i>exsolved fluid, and the crystal fraction after the slider</span>
-        <span><i style="border-color:var(--crimson); border-top-style:dotted"></i>jamming, crystals 0.6</span>
+        <span><i style="border-color:var(--crimson); border-top-style:dotted"></i>jamming, at the packing limit you set</span>
       </div>
-      <p class="lede" style="margin-top:18px"><b>Read the last panel carefully before you trust any of this.</b> Equilibrium decompression takes most of these magmas past 60 % crystals before they reach the surface, and a magma that crystalline cannot erupt at all. Real magma outruns its own crystallisation, which is why the erupted crystal content is lower than equilibrium says. That gap is a rate, not a thermodynamic quantity, and MELTS cannot tell you where it sits. The slider is you making that assumption explicit.</p>
+      <p class="lede" style="margin-top:18px"><b>Read the last panel carefully before you trust any of this.</b> At each magma&rsquo;s published temperature and the menu&rsquo;s water content, equilibrium decompression takes four of these six magmas past 60 % crystals by volume before they reach the surface, inside the 0.40 to 0.70 at which crystals jam (Mader, Llewellin &amp; Mueller 2013), and a jammed magma cannot flow at all. Real magma outruns its own crystallisation, which is why the erupted crystal content is lower than equilibrium says. That gap is a rate, not a thermodynamic quantity, and MELTS cannot tell you where it sits. The slider is you making that assumption explicit.</p>
     </section>
 
     <section class="panel" id="p-scale" role="tabpanel" aria-labelledby="tab-scale" hidden>
@@ -780,7 +787,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       reproduces the observed 2018 eruption rate is lithostatic at about 3.9 km, not at the
       5291 m every precomputed run is fixed at.</p>
       <h4>Composition</h4>
-      <p>The last option in the magma list takes ten oxides you type in and runs them through the same model, with no precomputed reference behind it. Fuego&rsquo;s two entries are matrix glass rather than whole rock, which is the right input for a melt viscosity model but means the numbers describe the melt between the crystals, not the erupted magma.</p>
+      <p>The last option in the magma list takes ten oxides you type in and runs them through the same model, with no precomputed reference behind it. Fuego&rsquo;s two entries are matrix glass rather than whole rock, which is the right input for a melt viscosity model but means the numbers describe the melt between the crystals, not the erupted magma. It also means the glass has already been through whatever crystallised on the way up, so crystallisation on the way up, started from it, counts that growth a second time.</p>
       <p>Choosing a named magma switches the melt viscosity to <code>Giordano, Russell &amp; Dingwell (2008)</code> on that magma&rsquo;s published oxide analysis, in both models, and brings the volcano with it: its published pre-eruptive temperature, its summit elevation, and a conduit it can actually erupt through. That last one matters. The Fuego glass in the 30 m conduit the generic grid uses runs at 3&times;10<sup>8</sup> kg/s and leaves the vent at porosity 0.67, well under the 0.80 this model fragments at, so Fuego used to report no column at all. At 15 m and 100 MPa it gives 9.6&times;10<sup>6</sup> kg/s and a column at 15.4 km above sea level, which is the eruption 3 June 2018 had. The reference runs for each magma are chained from that volcano&rsquo;s own summit, not the generic 1500 m, so a 15.4 km column from Fuego is correctly only 11.6 km of plume. Solubility stays on the same Henry&rsquo;s law for every magma, which is a real simplification: phonolite dissolves more water than rhyolite at the same pressure. Crystals are held at 0.40 across the composition box so the composition effect is isolated, which is not each magma&rsquo;s own phenocryst content.</p>
     </div>
     <div>
@@ -944,8 +951,8 @@ function stateAt(p, P, added){
     mel = meltsAt(P.mb, p);
     if (mel && mel.ok > 0.5){
       /* the slider still sets chamber crystallinity; MELTS supplies the increment
-         that decompression adds on top of it */
-      beta = P.beta + P.cryst*(mel.beta - P.mbeta0);
+         that decompression adds on top of it, as a crystal volume fraction */
+      beta = P.beta + P.cryst*(mel.phi - P.mbeta0);
       if (beta < 0) beta = 0; else if (beta > 0.85) beta = 0.85;
       xd = xd + P.cryst*(mel.xd - xd);
     } else { mel = null; }
@@ -1142,7 +1149,7 @@ function march(Q, P, keep){
   };
   const rec = function(k, pp, zz){
     out.push({ depth: P.L - zz, p:pp, u:k.u, alfa:k.sl.alfa, mu:k.mu, melt:meltViscAt(k.s, P),
-               rho:k.sl.rho,
+               beta:k.s.beta, rho:k.sl.rho,
                slip: k.sl.u1 > 0 ? k.sl.u2/k.sl.u1 : 1,
                M: Math.sqrt(k.M2 > 0 ? k.M2 : 0) });
   };
@@ -1166,16 +1173,42 @@ function march(Q, P, keep){
 }
 
 const VENT_BACKOFF = 0.001;
+/* Past the packing limit the crystals touch and lock into a framework, and the magma
+   stops flowing as a liquid. Where that happens depends on how the crystals are sized
+   and shaped, roughly 0.40 to 0.70 by volume (Mader, Llewellin & Mueller 2013), so it is
+   a control. It matters only while the melt is continuous: above fragmentation the
+   crystals ride inside pyroclasts. With a solved profile the check runs along it, so it
+   sees exactly the pressures the magma passes through and says where; without one, the
+   crystals and the gas depend on pressure alone, so it runs down the pressures instead. */
+function jammedOr(P, prof, res){
+  if (!(P.phiM > 0)) return res;
+  if (!P.mb && P.beta < P.phiM) return res;           /* frozen crystals, below the limit */
+  let jam = null;
+  if (prof){
+    for (const q of prof){
+      if (q.alfa >= ALFA_FRAG) break;
+      if (q.beta >= P.phiM){ jam = { p:q.p, beta:q.beta, depth:q.depth }; break; }
+    }
+  } else {
+    const n = 400, lr = Math.log(PATM/P.pch);
+    for (let k = 0; k <= n; k++){
+      const p = P.pch*Math.exp(lr*k/n), s = stateAt(p, P, 0);
+      if (s.alfa >= ALFA_FRAG) break;
+      if (s.beta >= P.phiM){ jam = { p:p, beta:s.beta, depth:null }; break; }
+    }
+  }
+  return jam ? { ok:false, jammed:true, jam:jam, why:"jammed" } : res;
+}
 function solveConduit(P){
   P.fm0 = chamberFm(P.xtot, P.beta, P.pch, P.T);
   if (P.mb){
     const m0 = meltsAt(P.mb, P.pch);
-    P.mbeta0 = (m0 && m0.ok > 0.5) ? m0.beta : null;
+    P.mbeta0 = (m0 && m0.ok > 0.5) ? m0.phi : null;
     if (P.mbeta0 == null) P.mb = null;
   }
   let lo = 1e2, hi = 2e10;
-  if (!march(lo, P, false).ok) return { ok:false, why:"no solution at any flux" };
-  if (march(hi, P, false).ok)  return { ok:false, why:"unbounded" };
+  if (!march(lo, P, false).ok) return jammedOr(P, null, { ok:false, why:"no solution at any flux" });
+  if (march(hi, P, false).ok)  return jammedOr(P, null, { ok:false, why:"unbounded" });
   /* Coarse bisection only has to land near the choking flux: the fine march below
      pins it down. Sixteen halvings in log flux leave it within 0.03 %. */
   for (let k = 0; k < 16; k++){
@@ -1219,11 +1252,19 @@ function solveConduit(P){
   }
   const addV = P.influx ? 2*Math.PI*P.R*P.influx/Q : 0;
   const s = stateAt(v.p, P, addV);
-  return { ok:true, Q:Q, prof:prof, vent:{
+  /* how long a parcel takes from the chamber to the vent: each depth step over the speed
+     across it. It decides whether crystals and gas could keep up with equilibrium on the
+     way, which neither model tracks for itself. */
+  let ascent = 0;
+  for (let i = 1; i < prof.length; i++){
+    const um = 0.5*(prof[i].u + prof[i-1].u);
+    if (um > 0) ascent += Math.abs(prof[i-1].depth - prof[i].depth)/um;
+  }
+  return jammedOr(P, prof, { ok:true, Q:Q, prof:prof, ascent:ascent, vent:{
       p:v.p, u:v.u, alfa:v.alfa, mu:v.mu, mfr:Q*(1 + addV), rho:v.rho, n:s.n,
       slip:v.slip, M:v.M },
     fragDepth:fragDepth, explosive: v.alfa >= ALFA_FRAG,
-    pSat: Math.pow(P.xtot/SOLUB, 2) };
+    pSat: Math.pow(P.xtot/SOLUB, 2) });
 }
 
 /* ---------------------------- atmosphere ----------------------------
@@ -1726,7 +1767,7 @@ const OX_NAMES = ["SiO2","TiO2","Al2O3","FeO","MnO","MgO","CaO","Na2O","K2O","P2
 const S = { h2o:0.046, pch:1.4e8, beta:0.40, T:1159, R:30, L:5291, bubbles:false, fo2:3,
             fragMode:"fixed", fragThr:0.80, fragK:1e-4, meltsCal:"h2o", co2:0,
             wind:10, zVent:1500, comp:"generic", influx:0, wzTop:300, wzBot:1000,
-            ownOx:null, cryst:0 };
+            ownOx:null, cryst:0, phiM:0.60 };
 const el = id => document.getElementById(id);
 let live = null, plume = null, ref = null, refPlume = null, tab = "conduit";
 let netPlume = null;
@@ -1762,19 +1803,38 @@ function chemBlend(){
      the mixed-volatile calibration, or for any CO2 at all, hands the job to the network */
   if (named && S.meltsCal !== "co2"){
     const mb = meltsBlend(S.comp, 100*S.h2o, S.T - COMPS[S.comp].T, S.fo2);
-    if (mb){ mb.src = "table"; return mb; }
+    if (mb){ mb.src = "table"; return meltsVolumes(mb); }
   }
   const sa = currentSA();
   if (!sa || typeof meltsNetBlend !== "function") return null;
   const nb = meltsNetBlend(sa, 100*S.h2o, S.T, S.fo2, GRID.melts && GRID.melts.pgrid,
                            { mode: S.meltsCal, co2ppm: S.co2 });
-  if (nb){ nb.src = "net"; nb.sa = sa; }
+  if (nb){ nb.src = "net"; nb.sa = sa; meltsVolumes(nb); }
   return nb;
+}
+/* MELTS reports crystals as a share of the whole system's mass, fluid included. The
+   conduit carries a crystal VOLUME fraction of the bubble-free magma, which is what the
+   Costa (2005) law and the packing limit both need, so every level is converted with this
+   page's own phase densities. The table has no fluid column, so there the melt's share
+   comes from the water budget: the system holds the water you set, the melt keeps what
+   MELTS dissolves in it, and the rest is fluid. */
+function meltsVolumes(mb){
+  const n = mb.pgrid.length, phi = new Float64Array(n), w = S.h2o;
+  for (let k = 0; k < n; k++){
+    const xs = mb.beta[k], xd = mb.xh2o[k];
+    let xl = mb.fluid ? 1 - xs - mb.fluid[k] : (1 - xs - w)/(1 - xd);
+    if (!(xl > 0)) xl = 0; else if (xl > 1 - xs) xl = 1 - xs;
+    const c = condensed(mb.pgrid[k]*1e5, S.T, xd, 0);
+    const vs = xs/c.rc, vl = xl/c.rmd;
+    phi[k] = vs + vl > 0 ? vs/(vs + vl) : NaN;
+  }
+  mb.phi = phi;
+  return mb;
 }
 
 function liveParams(){
   const P = { xtot:S.h2o, beta:S.beta, T:S.T, R:S.R, pch:S.pch, L:S.L, bubbles:S.bubbles };
-  P.cryst = S.cryst;
+  P.cryst = S.cryst; P.phiM = S.phiM;
   if (S.cryst > 0) P.mb = chemBlend();
   /* the carbon reaches the conduit whatever the crystallisation slider says */
   if (S.meltsCal === "co2" && S.co2 > 0 && typeof co2Profile === "function"){
@@ -1910,6 +1970,14 @@ function sci(v, digits){
   const m = v/Math.pow(10, e);
   return m.toFixed(digits == null ? 2 : digits) + " &times; 10<sup>" + e + "</sup>";
 }
+/* a duration in the unit a person would say it in */
+function fmtDur(t){
+  if (!(t >= 0) || !isFinite(t)) return "\u2013";
+  if (t < 120) return Math.round(t) + " s";
+  if (t < 7200) return Math.round(t/60) + " minutes";
+  if (t < 172800) return (t/3600).toFixed(t < 36000 ? 1 : 0) + " hours";
+  return (t/86400).toFixed(t < 864000 ? 1 : 0) + " days";
+}
 function setTile(id, main, sub){
   el("t-" + id).innerHTML = main;
   el("t-" + id + "-m").innerHTML = sub;
@@ -1962,7 +2030,8 @@ function renderTiles(){
     setTile("frag", "none", "<em>stops " + (100*short).toFixed(1)
       + " points short of 0.80" + (short < 0.03 ? ", a narrow miss" : "") + "</em>");
   } else {
-    ["mfr","u","p","frag"].forEach(k => setTile(k, "\u2013", "<em>no steady solution</em>"));
+    const why = live.jammed ? "<em>jammed before it fragments</em>" : "<em>no steady solution</em>";
+    ["mfr","u","p","frag"].forEach(k => setTile(k, "\u2013", why));
   }
   const refNote = function(v, fmtFn){
     if (refPlumeStale) return "<em>reference is chained at a " + Math.round(chainVent())
@@ -2001,7 +2070,8 @@ function renderTiles(){
       + "give it the room.";
   } else if (!ok){
     a.className = "pill warn";
-    a.textContent = "no steady solution at these settings";
+    a.textContent = live.jammed ? "jammed: crystals reach the packing limit"
+                                : "no steady solution at these settings";
   } else if (plume && plume.collapsed){
     a.className = "pill warn";
     a.textContent = "column collapses to a density current";
@@ -2054,12 +2124,23 @@ function renderTiles(){
       msg += " Melt viscosity from Giordano, Russell & Dingwell (2008) on the "
            + (COMPS[S.comp].label || S.comp) + " analysis.";
     if (S.cryst > 0 && live.ok && live.prof){
-      const v = live.prof[live.prof.length - 1];
       msg += " Crystallisation is on at " + Math.round(100*S.cryst)
            + "% of equilibrium, so MELTS is setting the crystals, the dissolved water"
-           + " and the melt viscosity at every pressure. The MAMMA curves do not do"
-           + " this, so read them as a different model rather than a check.";
+           + " and the melt viscosity at every pressure, as if the crystals kept pace."
+           + " The magma takes " + fmtDur(live.ascent) + " to rise from the chamber:"
+           + " ask whether that is time enough for them to grow. The MAMMA curves keep"
+           + " their crystals frozen, so read them as a different model rather than a check.";
     }
+  } else if (live.jammed){
+    const j = live.jam;
+    msg += "Crystals reach the " + S.phiM.toFixed(2) + " by volume set for jamming at "
+         + (j.p/1e6).toFixed(j.p < 1e7 ? 1 : 0) + " MPa"
+         + (j.depth != null ? ", about " + Math.round(j.depth) + " m below the vent" : "")
+         + ", while the melt is still continuous. Past that the magma stops flowing as a"
+         + " liquid, so there is no steady eruption here: a magma this crystalline moves,"
+         + " if at all, as a solid plug, which this model does not include."
+         + (S.cryst > 0 ? " Turn crystallisation on the way up down, or the packing limit up,"
+                          + " to find where the flow comes back." : "");
   }
   note.textContent = msg;
 }
@@ -2113,7 +2194,12 @@ function panelConduit(){
     ? "Melt viscosity in the live model: " + sci(prof[0].melt, 2) + " Pa s in the chamber, "
       + sci(prof[prof.length - 1].melt, 2) + " Pa s at the vent, where the water has left the melt."
       + " The mixture viscosity chart is the whole magma, crystals included."
-    : "";
+      + " A parcel of magma takes <b>" + fmtDur(live.ascent) + "</b> to rise from the chamber to the vent."
+    : live.jammed
+      ? "No profile: the magma jams " + (live.jam.depth != null
+          ? "about " + Math.round(live.jam.depth) + " m below the vent" : "in the conduit")
+        + ", where its crystals reach the packing limit before it fragments."
+      : "";
 }
 
 function panelColumn(){
@@ -2401,15 +2487,15 @@ function panelMelts(){
   if (!mb){ ids.forEach(function(i){ const c = el(i); c.style.height = "0px"; }); return; }
   const P = mb.pgrid.map(function(v){ return v/10; });          /* bar to MPa */
   const okm = function(arr){ return arr.map(function(v, k){ return mb.okc[k] > 0.5 ? v : null; }); };
-  const beta = okm(Array.from(mb.beta));
+  const beta = okm(Array.from(mb.phi || mb.beta));
   const h2o  = okm(Array.from(mb.xh2o).map(function(v){ return 100*v; }));
   const flu  = mb.fluid ? okm(Array.from(mb.fluid).map(function(v){ return 100*v; })) : null;
   const lv   = okm(Array.from(mb.lvisc).map(function(v){ return Math.pow(10, v); }));
   const xdom = [0.1, Math.max(50, S.pch/1e6*1.05)];
   const base = { h:230, xlog:true, xdom:xdom, xlab:"pressure, MPa", xfmt:logfmt, padL:58 };
   drawChart(el("c-mbeta"), Object.assign({}, base, {
-    ydom:[0, 1], ylab:"crystal mass fraction", yn:4,
-    hlines:[{ y:0.6, color:cr, dash:[2,3], label:"jamming", right:true }],
+    ydom:[0, 1], ylab:"crystal volume fraction", yn:4,
+    hlines:[{ y:S.phiM, color:cr, dash:[2,3], label:"jamming", right:true }],
     series:[{ x:P, y:beta, color:sl }] }));
   /* dissolved water and the exsolved fluid together, because the carbon slider moves the
      second one and barely touches the first, which is the whole point of the CO2 mode */
@@ -2431,13 +2517,13 @@ function panelMelts(){
   const used = (b0 && b0.ok > 0.5)
     ? beta.map(function(v, k){
         if (v == null) return null;
-        let x = S.beta + S.cryst*(v - b0.beta);
+        let x = S.beta + S.cryst*(v - b0.phi);
         return x < 0 ? 0 : (x > 0.85 ? 0.85 : x);
       })
     : null;
   drawChart(el("c-mused"), Object.assign({}, base, {
     ydom:[0, 1], ylab:"crystal fraction used", yn:4,
-    hlines:[{ y:0.6, color:cr, dash:[2,3], label:"jamming", right:true }],
+    hlines:[{ y:S.phiM, color:cr, dash:[2,3], label:"jamming", right:true }],
     series:[{ x:P, y:beta, color:sl, dash:[5,4], width:1.4 },
             used && { x:P, y:used, color:emb, width:2 }] }));
 }
@@ -2466,6 +2552,7 @@ function fmtVals(){
   el("wind-v").textContent = (S.wind < 1 ? "calm" : S.wind + " m/s");
   el("influx-v").textContent = S.influx <= 0 ? "none" : sci2(2*Math.PI*S.R*S.influx) + " kg/s";
   el("cryst-v").textContent = S.cryst <= 0 ? "off" : Math.round(100*S.cryst) + "% of equilibrium";
+  el("phim-v").textContent = S.phiM.toFixed(2);
   const cv = Math.round(chainVent());
   const named = S.comp !== "generic" && S.comp !== "custom" && COMPS[S.comp]
                 && COMPS[S.comp].vent_m != null && !S.influx;
@@ -2484,11 +2571,20 @@ function fmtVals(){
       + " m, so their heights are hidden until you come back. The live model follows the slider.";
   const meltable = S.comp !== "generic" && S.comp !== "custom" && COMPS[S.comp] && GRID.melts;
   el("cryst").disabled = !meltable;
+  /* the sweep can only run what the slider can */
+  const so = el("sweepvar").querySelector('option[value="cryst"]');
+  if (so){
+    so.disabled = !meltable;
+    if (!meltable && el("sweepvar").value === "cryst"){ el("sweepvar").value = "h2o"; syncSweepLabel(); }
+  }
   el("cryst-hint").textContent = !meltable
     ? "Needs one of the named magmas: the MELTS paths are computed per composition."
     : (S.cryst <= 0
        ? "Frozen at the chamber value, which is what MAMMA assumes, so the comparison holds."
-       : "MELTS now supplies crystals, dissolved water and melt viscosity at every pressure. MAMMA does not, so the two curves no longer share their assumptions.");
+       : "MELTS now supplies crystals, dissolved water and melt viscosity at every pressure. MAMMA does not, so the two curves no longer share their assumptions."
+         + (/matrix glass/i.test((COMPS[S.comp] && COMPS[S.comp].label) || "")
+            ? " This entry is matrix glass, the melt as it erupted, so it has already been through whatever crystallised on the way up: crystallising it again counts that twice."
+            : ""));
   el("beta-hint").textContent = Math.abs(S.beta - AX.beta) < 0.005
     ? "The main 702-run grid sits here; elsewhere the crystal box answers"
     : "Crystal box: coarser in chamber pressure";
@@ -2526,6 +2622,7 @@ bindRange("rad", v => S.R = v);
 bindRange("len", v => S.L = v);
 bindRange("vent", v => { S.zVent = v; S.vent0 = v; });
 bindRange("cryst", v => { S.cryst = v; });
+bindRange("phim", v => { S.phiM = v; });
 bindRange("influx", function(v){ S.influx = v <= 0 ? 0 : Math.pow(10, v); });
 /* Geometry that puts each magma in its own explosive regime. The silicic magmas are
    happy in the 30 m conduit the generic grid uses; the Fuego glass in the same
@@ -2881,9 +2978,24 @@ function meltsAt(mb, p_Pa){
   const a = g[i-1], b = g[i];
   let f = (Math.log(pb) - Math.log(a))/(Math.log(b) - Math.log(a));
   if (!(f >= 0)) f = 0; else if (f > 1) f = 1;
-  const at = arr => arr[i-1] + f*(arr[i] - arr[i-1]);
-  return { beta: at(mb.beta), xd: at(mb.xh2o), lvisc: at(mb.lvisc), ok: at(mb.okc),
-           fluid: mb.fluid ? at(mb.fluid) : null };
+  const pack = function(j0, j1, w){
+    const at = arr => arr[j0] + w*(arr[j1] - arr[j0]);
+    return { beta: at(mb.beta), phi: at(mb.phi || mb.beta), xd: at(mb.xh2o),
+             lvisc: at(mb.lvisc), ok: at(mb.okc), fluid: mb.fluid ? at(mb.fluid) : null };
+  };
+  const r = pack(i-1, i, f);
+  if (r.ok > 0.5) return r;
+  /* A level MELTS missed is a numerical accident, not a phase boundary (see the notes
+     under Chemistry), so it must not send the conduit back to frozen crystals. Bridge the
+     nearest converged levels on either side; past the last one, which is where a vent at
+     one bar sits, hold the last level the magma came through. */
+  let ja = i - 1; while (ja >= 0 && !(mb.okc[ja] > 0.5)) ja--;
+  if (ja < 0) return r;
+  let jb = i; while (jb < n && !(mb.okc[jb] > 0.5)) jb++;
+  if (jb >= n) return pack(ja, ja, 0);
+  let w = (Math.log(pb) - Math.log(g[ja]))/(Math.log(g[jb]) - Math.log(g[ja]));
+  if (!(w >= 0)) w = 0; else if (w > 1) w = 1;
+  return pack(ja, jb, w);
 }
 
 /* ------------------------- what the carbon does -------------------------
@@ -3225,6 +3337,8 @@ function meta(extra){
     "# crystallisation       = " + (S.cryst > 0
         ? Math.round(100*S.cryst) + "% of the MELTS equilibrium increase on the way up"
         : "off, crystals frozen at the chamber value"),
+    "# crystals_jam_at       = " + S.phiM.toFixed(2)
+        + " (volume fraction; reached before fragmentation, the magma is reported as jammed)",
     "# oxygen_buffer         = " + ["FMQ-2", "FMQ-1", "FMQ", "FMQ+1", "FMQ+2"][S.fo2],
     "# melts_calibration     = " + (S.meltsCal === "co2"
         ? "MELTS 1.2.0, water and CO2, " + S.co2 + " ppm CO2" : "rhyolite-MELTS 1.0.2, water only"),
@@ -3270,6 +3384,7 @@ function csvConduit(){
                "  exit_velocity_ms           = " + num(v.u),
                "  vent_pressure_Pa           = " + num(v.p),
                "  fragmentation_depth_m      = " + (live.fragDepth == null ? "none" : num(live.fragDepth)),
+               "  ascent_time_s              = " + num(live.ascent),
                "  melt_viscosity_chamber_Pas = " + num(p[0].melt),
                "  melt_viscosity_vent_Pas    = " + num(p[p.length - 1].melt),
                "  column_top_m_asl           = " + (!plume ? "none" : plume.collapsed ? "collapses" : num(plume.top))])
@@ -3377,11 +3492,14 @@ function csvBox(){
   return meta(notes) + rows.join("\n") + "\n";
 }
 
-/* each control steps in a round unit of its own: 0.1 wt%, 3 MPa, 0.01, 5 K, 2.5 m, 100 m */
+/* each control steps in a round unit of its own: 0.1 wt%, 3 MPa, 0.01, 2 % of
+   equilibrium, 5 K, 2.5 m, 100 m */
 const SWEEPS = {
   h2o:  { label:"dissolved water",  lo:0.020, hi:0.080, step:0.001, unit:"wt_frac", set:v => S.h2o = v },
   pch:  { label:"chamber pressure", lo:6e7,   hi:2.4e8, step:3e6,   unit:"Pa",      set:v => S.pch = v },
   beta: { label:"crystal fraction", lo:0.0,   hi:0.62,  step:0.01,  unit:"vol_frac",set:v => S.beta = v },
+  cryst:{ label:"crystallisation on the way up", lo:0, hi:1, step:0.02, unit:"frac_of_equilibrium",
+          set:v => S.cryst = v },
   temp: { label:"temperature",      lo:1020,  hi:1320,  step:5,     unit:"K",       set:v => S.T = v },
   rad:  { label:"conduit radius",   lo:5,     hi:100,   step:2.5,   unit:"m",       set:v => S.R = v },
   len:  { label:"conduit length",   lo:2000,  hi:9000,  step:100,   unit:"m",       set:v => S.L = v },
@@ -3392,19 +3510,20 @@ function sweepCount(key){
 }
 function csvSweep(key){
   const sw = SWEEPS[key];
-  const keep = { h2o:S.h2o, pch:S.pch, beta:S.beta, T:S.T, R:S.R, L:S.L };
+  const keep = { h2o:S.h2o, pch:S.pch, beta:S.beta, T:S.T, R:S.R, L:S.L, cryst:S.cryst };
   const N = sweepCount(key) - 1;
   const rows = ["swept_variable,value_" + sw.unit + ","
               + "regime,mass_eruption_rate_kgs,vent_velocity_ms,vent_pressure_Pa,"
               + "vent_gas_vol_frac,vent_gas_mass_frac,vent_viscosity_Pas,fragmentation_depth_m,"
-              + "column_top_m_asl,neutral_buoyancy_m_asl,height_above_vent_m"];
+              + "column_top_m_asl,neutral_buoyancy_m_asl,height_above_vent_m,"
+              + "ascent_time_s,jam_depth_m"];
   for (let k = 0; k <= N; k++){
     const v = sw.lo + (sw.hi - sw.lo)*k/N;
     sw.set(v);
     /* the same inputs as the tiles, so the magma, MELTS crystallisation, CO2 and any
        groundwater stay as they were set */
     const c = solveConduit(liveParams());
-    let regime = "no_solution", pl = null;
+    let regime = c.jammed ? "jammed" : "no_solution", pl = null;
     if (c.ok && c.explosive){
       pl = solvePlume({ mfr:c.vent.mfr, u0:c.vent.u, n0:c.vent.n, T0:S.T, zVent:S.zVent, wind:S.wind });
       regime = pl.collapsed ? "collapse" : "buoyant_column";
@@ -3416,13 +3535,17 @@ function csvSweep(key){
     } else { r.push("", "", "", "", "", "", ""); }
     if (pl && !pl.collapsed) r.push(num(pl.top), pl.nbl ? num(pl.nbl) : "", num(pl.top - S.zVent));
     else r.push("", "", "");
+    r.push(c.ok ? num(c.ascent) : "", c.jammed && c.jam.depth != null ? num(c.jam.depth) : "");
     rows.push(r.join(","));
   }
   S.h2o = keep.h2o; S.pch = keep.pch; S.beta = keep.beta; S.T = keep.T; S.R = keep.R; S.L = keep.L;
+  S.cryst = keep.cryst;
   return meta([sw.label + " swept from " + num(sw.lo) + " to " + num(sw.hi) + " " + sw.unit
                + " in steps of " + num(sw.step) + ", " + (N + 1) + " states, every other control"
                + " held at the value listed above",
-               "regime: buoyant_column | collapse | effusive | no_solution",
+               "regime: buoyant_column | collapse | effusive | jammed | no_solution",
+               "ascent_time_s: chamber to vent; jam_depth_m: where the crystals reach the packing"
+               + " limit before the magma fragments, on the profile solved without the limit",
                "all rows are the live browser model, not MAMMA"])
          + rows.join("\n") + "\n";
 }
@@ -3474,7 +3597,9 @@ Array.prototype.forEach.call(document.querySelectorAll("button.dl"), function(bt
       }, 60);
       return;
     }
-    if (!text){ showCsv(name, "", "There is nothing to export from this state: the conduit has no steady explosive solution, so there is no profile to write."); return; }
+    if (!text){ showCsv(name, "", live && live.jammed
+        ? "There is nothing to export from this state: the magma jams in the conduit, so there is no flowing profile to write."
+        : "There is nothing to export from this state: the conduit has no steady explosive solution, so there is no profile to write."); return; }
     saveCsv(name, text);
   });
 });
@@ -3523,8 +3648,9 @@ const TIP = {
      +"and it does not include microlites grown on the way up.<br><br>With crystallisation "
      +"on the way up switched off it is <b>held at this value all the way to the surface</b>, "
      +"which is the assumption MAMMA makes, so the comparison stays like for like. It "
-     +"stiffens the magma through Costa (2005), and past about 0.40 it closes the explosive "
-     +"window altogether." },
+     +"stiffens the magma through Costa (2005). In the crystal box about nine in ten MAMMA "
+     +"runs still fragment from 0.25 to 0.40, then 77 % at 0.50; set it at or past the "
+     +"packing limit under Crystallisation and the magma jams in the chamber." },
 
   cryst: { k:"chosen", t:"Crystallisation on the way up",
     b:"Off means the crystal fraction stays frozen at the chamber value, which is what the "
@@ -3533,7 +3659,19 @@ const TIP = {
      +"slider is how much of that equilibrium crystallisation you believe actually "
      +"happens.<br><br>Real magma outruns its own crystallisation, so the honest answer is "
      +"somewhere between 0 and 1 and no thermodynamic model can tell you where. The slider "
-     +"is you making that assumption out loud." },
+     +"is you making that assumption out loud.<br><br>Judge it by the ascent time on the "
+     +"Conduit tab: crystals need time to grow. Full equilibrium takes most of these magmas "
+     +"past the packing limit below, and then the magma jams." },
+
+  phim: { k:"chosen", t:"Crystals jam at",
+    b:"The crystal <b>volume</b> fraction at which the crystals touch and lock into a "
+     +"framework, the maximum packing fraction. Reach it while the melt is still continuous "
+     +"and the magma stops flowing as a liquid, so the page reports it as jammed instead of "
+     +"solving for an eruption rate. Above fragmentation it no longer matters: the crystals "
+     +"ride inside pyroclasts.<br><br>It depends on the crystals: roughly 0.40 for "
+     +"elongate crystals of similar size, rising towards 0.70 as the sizes spread out "
+     +"(Mader, Llewellin &amp; Mueller 2013). Nobody measured it for these eruptions; the "
+     +"crystal size distribution of the erupted products is where you would look." },
 
   temp: { k:"measured", t:"Magma temperature",
     b:"Pre-eruptive temperature from the published source for this magma, cited under the "
