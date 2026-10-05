@@ -319,7 +319,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <div class="row"><label for="own">Ten oxides, wt%</label></div>
         <textarea id="own" rows="3" spellcheck="false"
           placeholder="SiO2 TiO2 Al2O3 FeO MnO MgO CaO Na2O K2O P2O5">61.08 1.63 13.63 9.12 0.20 1.99 4.40 4.37 3.02 0.56</textarea>
-        <div class="hint">Shown above: Fuego 2018 matrix glass (Liu et al. 2020), ten oxides in order, summing to 100.00 wt%, so you can see the format before you touch it. Delete it and paste your own row straight out of a spreadsheet or a paper table, same order, anhydrous. Recast Fe2O3 as FeO by multiplying by 0.8998. Then set the temperature to the one your source gives.</div>
+        <div class="hint">Shown above as an example of the format: Fuego 2018 matrix glass (Liu et al. 2020), ten oxides in order, summing to 100.00 wt%. Replace it with your own row, copied from a spreadsheet or a published table, in the same order and on an anhydrous basis. Recast Fe2O3 as FeO by multiplying by 0.8998, then set the temperature given by your source.</div>
         <div class="own-out" id="own-out"></div>
       </div>
 
@@ -338,7 +338,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <div class="ctl">
         <div class="row"><label for="beta">Crystal fraction</label><span class="val" id="beta-v">0.40</span></div>
         <input type="range" id="beta" min="0" max="0.62" step="0.01" value="0.40">
-        <div class="hint" id="beta-hint">The main 702-run grid sits here; elsewhere the crystal box answers</div>
+        <div class="hint" id="beta-hint">The main 702-run grid uses this value; elsewhere the crystal box answers</div>
       </div>
 
       <div class="ctl">
@@ -350,7 +350,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <div class="ctl">
         <div class="row"><label for="phim">Crystals jam at</label><span class="val" id="phim-v">0.60</span></div>
         <input type="range" id="phim" min="0.40" max="0.70" step="0.01" value="0.60">
-        <div class="hint" id="phim-hint">Crystal volume fraction at which the crystals lock together. Reach it before the magma fragments and it stops flowing.</div>
+        <div class="hint" id="phim-hint">Crystal volume fraction at which the crystals lock together. If it is reached before the magma fragments, the magma stops flowing.</div>
       </div>
 
       <div class="ctl">
@@ -360,7 +360,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
           <option value="a1">Porosity, adjustable</option>
           <option value="a2">Brittle failure at the wall shear rate</option>
         </select>
-        <div class="hint" id="fragmode-hint">MAMMA fragments where the gas volume fraction crosses a threshold. Natural deposits put that somewhere between 64 and 80 %, and the experiments say it is not a fixed number at all but a stress criterion, so the page lets you move it or swap it.</div>
+        <div class="hint" id="fragmode-hint">MAMMA fragments the magma where the gas volume fraction crosses a threshold. Natural deposits place it between about 64 and 80 %, and experiments point to a stress criterion rather than a fixed porosity, so the page lets you change the threshold or replace it.</div>
       </div>
 
       <div class="ctl" id="ctl-fragthr" hidden>
@@ -391,7 +391,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
           <option value="h2o" selected>rhyolite-MELTS 1.0.2, water only</option>
           <option value="co2">MELTS 1.2.0, water and CO2</option>
         </select>
-        <div class="hint">Two separate campaigns, and at zero CO2 they disagree with each other by about the size of their own errors, 0.1 wt% of fluid at the median. The water-only fit is the tighter one, so it stays the default. Switch to 1.2.0 and the carbon reaches the conduit as well as the phase diagram, whatever the crystallisation slider says, because carbon leaving the melt is not a crystallisation question.</div>
+        <div class="hint">These are two separate campaigns. At zero CO2 they differ by about their own errors, 0.1 wt% of fluid at the median; the water-only calibration is the more precise and remains the default. With 1.2.0 selected, CO2 enters the conduit model as well as the phase diagram, independently of the crystallisation setting.</div>
       </div>
 
       <div class="ctl" id="ctl-co2" hidden>
@@ -473,7 +473,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <div class="btns" style="margin-top:9px">
           <button type="button" class="dl" data-k="sweep">Export 61 solved states</button>
         </div>
-        <div class="hint">Everything else stays where you left it, so the sweep is a clean one-variable experiment.</div>
+        <div class="hint">All other settings stay as they are, so the sweep varies one control at a time.</div>
       </div>
     </div>
 
@@ -511,7 +511,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
     </div>
 
     <section class="panel" id="p-conduit" role="tabpanel" aria-labelledby="tab-conduit">
-      <p class="lede">Depth runs down the axis, the chamber at the bottom and the vent at zero. The magma is <b>almost all the way to the surface before anything happens</b>: pressure falls along a near-magmastatic line, then in the last few hundred metres water comes out of solution, the mixture expands, and velocity and viscosity both run away. The dashed line is MAMMA, interpolated from the precomputed runs around your settings.</p>
+      <p class="lede">Depth increases down the axis, from the vent at zero to the chamber at the bottom. <b>Most of the change happens near the surface</b>: pressure falls along a near-magmastatic gradient, and once water exsolves the mixture expands, so that in the upper few hundred metres velocity and viscosity rise steeply. The dashed line is MAMMA, interpolated from the precomputed runs nearest your settings.</p>
       <div class="charts two">
         <div class="card"><h3>Pressure</h3><canvas id="c-p"></canvas></div>
         <div class="card"><h3>Velocity</h3><canvas id="c-u"></canvas></div>
@@ -527,7 +527,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
     </section>
 
     <section class="panel" id="p-column" role="tabpanel" aria-labelledby="tab-column" hidden>
-      <p class="lede">The vent state on the left becomes the source condition for the plume. The envelope is the plume radius, bent downwind. A column only stands up if it entrains enough air to turn its own weight into buoyancy before its momentum is spent. <b>Fail that and the mixture comes back down as a pyroclastic density current.</b></p>
+      <p class="lede">The vent state shown in the tiles is the source condition for the plume. The envelope shows the plume radius, bent downwind. A column rises only if it entrains enough air to become buoyant before its momentum is spent; <b>otherwise it collapses and feeds a pyroclastic density current.</b></p>
       <div class="charts">
         <div class="card wide"><h3>Plume envelope, downwind distance against height</h3><canvas id="c-plume"></canvas></div>
         <div class="card"><h3>Density contrast with the atmosphere</h3><canvas id="c-dens"></canvas></div>
@@ -541,17 +541,17 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
     </section>
 
     <section class="panel" id="p-map" role="tabpanel" aria-labelledby="tab-map" hidden>
-      <p class="lede">Every cell is one MAMMA run at the chamber pressure you have selected, with the magma at 1159 K; move the temperature slider and the map follows it into the temperature box, at the nearest of its five temperatures and three chamber pressures. Colour is mass eruption rate. <b>Hatched cells have no steady explosive solution.</b> At 1159 K they gather at low water and low chamber pressure, where the magma is driest and stiffest: there MAMMA&rsquo;s shooting does not close, and after 17 minutes on an ARCHER2 core it is still searching for an inlet velocity. Cool the magma and that corner spreads across the map. At 1223 K a second patch appears in the widest conduits at 180 MPa, where the flow chokes at 40 to 200 bar before it is porous enough to fragment. Click any cell to move the sliders there.</p>
+      <p class="lede">Every cell is one MAMMA run at the chamber pressure you have selected, with the magma at 1159 K; move the temperature slider and the map follows it into the temperature box, at the nearest of its five temperatures and three chamber pressures. Colour is mass eruption rate. <b>Hatched cells have no steady explosive solution.</b> At 1159 K they gather at low water and low chamber pressure, where the magma is driest and stiffest: there MAMMA&rsquo;s shooting method finds no inlet velocity within the 17-minute limit per run on ARCHER2. Cooling the magma extends that region across the map. At 1223 K a second patch appears in the widest conduits at 180 MPa, where the flow chokes at 40 to 200 bar before it is porous enough to fragment. Click any cell to move the sliders there.</p>
       <div class="charts">
         <div class="card wide"><h3>Mass eruption rate over the water&ndash;radius plane</h3><canvas id="c-map"></canvas></div>
         <div class="card wide"><h3>Where the explosive window closes: magma</h3><canvas id="c-magma"></canvas>
-          <p class="lede" style="margin:10px 0 0">The same test across six real magmas, crystals held at 0.40 and each at its own published pre-eruptive temperature. <b>The window is a band in melt viscosity, not a threshold.</b> The three intermediate magmas sit between 70 and 80 percent. Both ends fall away: Oruanui rhyolite to 47 percent, where MAMMA finds no steady flow for the stiff melt, and the two Fuego glasses to 25 and 29 percent, where the runny melt often reaches the vent without fragmenting, which fits how much of Fuego&rsquo;s real activity is Strombolian rather than Plinian. They also need opposite conditions to get into the window at all: Fuego manages it in narrow conduits or at low chamber pressure, Oruanui in wide conduits, or in narrow ones only with plenty of water. Temperature is confounded here, since each magma carries its own; the chart below holds the magma fixed and moves only the temperature.</p>
+          <p class="lede" style="margin:10px 0 0">The same test across six real magmas, crystals held at 0.40 and each at its own published pre-eruptive temperature. <b>The window is a band in melt viscosity, not a threshold.</b> The three intermediate magmas sit between 70 and 80 percent. Both ends fall away: Oruanui rhyolite to 47 percent, where MAMMA finds no steady flow for the stiff melt, and the two Fuego glasses to 25 and 29 percent, where the low-viscosity melt often reaches the vent below 0.80 porosity, which MAMMA counts as unfragmented (the live model treats the overpressured cases as fragmenting at the vent). The two ends need opposite conditions to enter the window: Fuego in narrow conduits or at low chamber pressure, Oruanui in wide conduits, or in narrow ones only with abundant water. Temperature is confounded here, since each magma carries its own; the chart below holds the magma fixed and moves only the temperature.</p>
         </div>
         <div class="card wide"><h3>Where the explosive window closes: temperature</h3><canvas id="c-temp"></canvas>
-          <p class="lede" style="margin:10px 0 0" id="temp-lede">The generic magma at five temperatures, crystals at 0.40, every water content and radius of the main grid at 100, 140 and 180 MPa. <b>Cooling closes the window from the dry side.</b> At 1159 K 91 % of the runs reach a steady explosive solution; at 1123 K 86 %, at 1073 K 72 %, and at 1023 K, rhyolite temperatures, 52 %. The losses pile up at low water: at 1023 K only 6 of the 27 runs at 2 wt% erupt explosively, against 26 of 27 at 8 wt%. The runs that do erupt slow down too, the median eruption rate falling from 5.3e7 kg/s at 1159 K to 2.4e7 at 1023 K. The hot end loses a few runs for a different reason: at 1223 K the widest conduits at 180 MPa carry up to 4.6e9 kg/s, and the flow chokes before its porosity reaches 0.80, so MAMMA converges but nothing fragments inside the conduit. Where MAMMA does erupt, the live model follows it into the cold, its eruption rate 10 % low at 1023 K against 2 % at 1159 K. The cliff itself it barely sees: at 149 of the 168 cold runs where MAMMA finds no steady solution, the live model still erupts explosively.</p>
+          <p class="lede" style="margin:10px 0 0" id="temp-lede">The generic magma at five temperatures, crystals at 0.40, every water content and radius of the main grid at 100, 140 and 180 MPa. <b>Cooling closes the window from the dry side.</b> At 1159 K 91 % of the runs reach a steady explosive solution; at 1123 K 86 %, at 1073 K 72 %, and at 1023 K, rhyolite temperatures, 52 %. The losses concentrate at low water: at 1023 K only 6 of the 27 runs at 2 wt% erupt explosively, against 26 of 27 at 8 wt%. The runs that do erupt are also slower, the median eruption rate falling from 5.3e7 kg/s at 1159 K to 2.4e7 at 1023 K. The hot end loses a few runs for a different reason: at 1223 K the widest conduits at 180 MPa carry up to 4.6e9 kg/s, and the flow chokes before its porosity reaches 0.80, so MAMMA converges but nothing fragments inside the conduit. Where MAMMA does erupt, the live model tracks it to low temperature, its eruption rate 10 % low at 1023 K against 2 % at 1159 K. It does not reproduce the loss of steady solutions: at 149 of the 168 cold runs where MAMMA finds no steady solution, the live model still erupts explosively.</p>
         </div>
         <div class="card wide"><h3>Where the explosive window closes: crystals</h3><canvas id="c-window"></canvas>
-          <p class="lede" style="margin:10px 0 0">Each bar is the share of that crystal slice&rsquo;s MAMMA runs that reached a steady solution which actually fragments, meaning vent porosity of 0.80 or more. About nine in ten from 0.25 to 0.40, then 85 % at 0.45 and 77 % at 0.50: <b>past about 40 vol% crystals the window narrows</b>, from the dry, low-pressure side, where 169 of the 197 runs without a steady solution sit at 100 MPa. It narrows at the runny end too, 82 % at 0.10, because in conduits 43 m and wider that magma chokes at 30 to 390 bar before it is porous enough to fragment. Same shape as the magma and temperature charts above: a band in viscosity, with both edges falling away. The browser model catches the runny edge, leaving 53 of those 62 runs below 0.80 porosity at the vent too, but barely sees the stiff one: at 72 of the 82 runs at 0.50 where MAMMA finds no steady solution, it still erupts explosively. That disagreement is worth arguing about.</p>
+          <p class="lede" style="margin:10px 0 0">Each bar is the share of that crystal slice&rsquo;s MAMMA runs that reached a steady solution which actually fragments, meaning vent porosity of 0.80 or more. About nine in ten from 0.25 to 0.40, then 85 % at 0.45 and 77 % at 0.50: <b>past about 40 vol% crystals the window narrows</b>, from the dry, low-pressure side, where 169 of the 197 runs without a steady solution sit at 100 MPa. It also narrows at the low-viscosity end, 82 % at 0.10, because in conduits 43 m and wider that magma chokes at 30 to 390 bar before it is porous enough to fragment. The pattern matches the magma and temperature charts above: a band in viscosity, falling away at both edges. The live model reproduces the low-viscosity edge, leaving 53 of those 62 runs below 0.80 porosity at the vent, but not the high-viscosity one: at 72 of the 82 runs at 0.50 where MAMMA finds no steady solution, it still erupts explosively. The reason for that disagreement is not yet established.</p>
         </div>
       </div>
       <div class="legend">
@@ -568,18 +568,18 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <div class="card"><h3>Crystals</h3><canvas id="c-mbeta"></canvas></div>
         <div class="card"><h3>Volatiles: dissolved and exsolved</h3><canvas id="c-mh2o"></canvas></div>
         <div class="card"><h3>Melt viscosity</h3><canvas id="c-mvisc"></canvas></div>
-        <div class="card"><h3>What the conduit model actually uses</h3><canvas id="c-mused"></canvas></div>
+        <div class="card"><h3>Crystal fraction used by the conduit model</h3><canvas id="c-mused"></canvas></div>
       </div>
       <div class="legend">
         <span><i style="border-color:var(--slate)"></i>MELTS at equilibrium: crystals, dissolved water, melt viscosity</span>
         <span><i style="border-color:var(--ember)"></i>exsolved fluid, and the crystal fraction after the slider</span>
         <span><i style="border-color:var(--crimson); border-top-style:dotted"></i>jamming, at the packing limit you set</span>
       </div>
-      <p class="lede" style="margin-top:18px"><b>Read the last panel carefully before you trust any of this.</b> At each magma&rsquo;s published temperature and the menu&rsquo;s water content, equilibrium decompression takes four of these six magmas past 60 % crystals by volume before they reach the surface, inside the 0.40 to 0.70 at which crystals jam (Mader, Llewellin &amp; Mueller 2013), and a jammed magma cannot flow at all. Real magma outruns its own crystallisation, which is why the erupted crystal content is lower than equilibrium says. That gap is a rate, not a thermodynamic quantity, and MELTS cannot tell you where it sits. The slider is you making that assumption explicit.</p>
+      <p class="lede" style="margin-top:18px"><b>The last panel matters most.</b> At each magma&rsquo;s published temperature and the menu&rsquo;s water content, equilibrium decompression takes four of these six magmas past 60 % crystals by volume before they reach the surface, inside the 0.40 to 0.70 at which crystals jam (Mader, Llewellin &amp; Mueller 2013), and a jammed magma cannot flow. Erupted crystal contents are generally lower than equilibrium predicts because magma usually ascends faster than crystals can grow; that difference is set by rates, which MELTS does not model. The crystallisation slider makes the assumption explicit.</p>
     </section>
 
     <section class="panel" id="p-scale" role="tabpanel" aria-labelledby="tab-scale" hidden>
-      <p class="lede">All 657 chained runs of the main grid, plotted the way a plume paper plots them. Morton, Taylor and Turner predict height above the vent going as the fourth root of the buoyancy flux. <b>The scatter about that line is the whole point:</b> two eruptions with the same mass flux reach different heights because they carry different amounts of gas, and wind pulls the whole cloud down. The flat row pinned along the bottom is not part of that scaling law at all: those are the columns that collapsed, and they lean towards the biggest eruptions on the plot, at a median rate about six times that of the columns that rise. A collapsing column never reaches a buoyant height to plot, so each one is drawn at the same fixed floor instead of its brief, fragile jet-apex height, which keeps the real plume trend above readable.</p>
+      <p class="lede">All 657 chained runs of the main grid, plotted as in plume studies. Morton, Taylor and Turner predict that height above the vent scales with the fourth root of the buoyancy flux. <b>The scatter about that line is the main result:</b> eruptions with the same mass flux reach different heights because they carry different amounts of gas, and wind lowers the column. The row along the bottom is not part of the scaling: these are the columns that collapsed, concentrated among the largest eruptions on the plot, at a median rate about six times that of the columns that rise. A collapsing column has no buoyant height, so each is drawn at a fixed floor rather than at its brief jet-apex height, which keeps the plume trend above readable.</p>
       <div class="charts">
         <div class="card wide"><h3>Height above vent against mass eruption rate</h3><canvas id="c-scale"></canvas></div>
       </div>
@@ -601,42 +601,42 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       <h4>Solved in your browser</h4>
       <p>The orange curves are a steady one-dimensional model integrated from scratch every time you move a slider. The conduit uses Henry&rsquo;s law for water solubility, <code>Hess &amp; Dingwell (1996)</code> for melt viscosity, <code>Costa (2005)</code> for the crystal stiffening, a porosity threshold of 0.80 for fragmentation, Poiseuille wall friction below it and turbulent drag above, and shoots on mass flux until the exit chokes. The plume is a bent-over top-hat model with the entrainment closure <code>u<sub>e</sub> = 0.09|u &minus; V cos&theta;| + 0.6|V sin&theta;|</code>.</p>
       <h4>Nothing to install</h4>
-      <p>No Python, no Fortran, no command line. Open it, move something, watch what changes.</p>
+      <p>The page runs entirely in the browser, with no installation or command line.</p>
     </div>
     <div>
       <h4>Precomputed reference runs</h4>
       <p>The slate curves come from two Fortran codes that cannot run in a browser, so they were run ahead of time. <b>MAMMA</b> is a two-phase, two-pressure, two-velocity conduit solver; every converged vent state was then fed into <b>PLUME-MoM-TSM</b> at four wind speeds. Both codes are by Mattia de&rsquo; Michieli Vitturi (INGV Pisa), used here with his permission. Five separate boxes were swept: the main grid, a temperature box, a crystal-fraction box, a composition box run through Giordano et al. (2008), and a groundwater box using MAMMA&rsquo;s aquifer interaction. The pill above the tabs says which one is answering. Between them they answer only on their own grid corners, so a sixth source now fills the gaps: a <b>surrogate</b> trained on an ARCHER2 Sobol campaign of 1,374,424 MAMMA runs over nine axes (water, radius, length, chamber pressure, crystals, temperature, groundwater and two composition coordinates), run by Eric Breard in 118 short-queue jobs for 243 node-hours. Of the 759,350 that converged, only the 384,087 with a choked vent are learnable: the rest stop on the fragmentation discontinuity, which fixes the mass flow rate but leaves a subsonic, over-pressured exit. A 20 KB network predicts the mass eruption rate of the choked ones, and a second network says whether a given setting is in that regime at all, so the page declines to quote a number where MAMMA would not choke. Checked against ten fresh MAMMA runs at settings the network had never seen: median error 0.6 %, worst 0.9 %.</p>
 
-      <p>That first network fragments where MAMMA&rsquo;s own default does, at a fixed 0.80 gas volume fraction. Since the fragmentation criterion is the page&rsquo;s most consequential assumption and the one the natural samples most clearly contradict, MAMMA was patched to carry three more, and two further campaigns were run so the surrogate can follow them. <b>A1</b> makes the porosity threshold an input, swept over 0.65 to 0.85, roughly the range the deposits span; it is a 14-input network and its held-out error is 2.3 %. <b>A2</b> replaces porosity with a strain-rate criterion after Papale (1999) and Dingwell (1996), brittle failure when the wall shear rate reaches a given fraction of the melt&rsquo;s structural relaxation rate, swept over 10<sup>-5</sup> to 10<sup>-3</sup>; there a classifier first decides whether the flow fragments at all, at 99.6 % accuracy, and then one of two regressors answers, at 5.9 % for the fragmenting branch and 1.7 % for the unfragmented one. The threshold is not a detail: moving A1 from 0.70 to 0.85 lowers the mass eruption rate by a third at the default settings, and at 0.80 it agrees with the independent fixed-criterion network to 2 %. A fourth patched criterion, gas overpressure after Spieler et al. (2004), is implemented but inert in this build, because MAMMA&rsquo;s relaxed two-pressure closure leaves the two phases within 10<sup>-5</sup> Pa of each other.</p>
-      <h4>The gas outruns the melt</h4>
+      <p>That first network fragments where MAMMA&rsquo;s own default does, at a fixed 0.80 gas volume fraction. Since the fragmentation criterion is the page&rsquo;s most consequential assumption and the one the natural samples most clearly contradict, MAMMA was patched to carry three more, and two further campaigns were run so the surrogate can follow them. <b>A1</b> makes the porosity threshold an input, swept over 0.65 to 0.85, roughly the range the deposits span; it is a 14-input network and its held-out error is 2.3 %. <b>A2</b> replaces porosity with a strain-rate criterion after Papale (1999) and Dingwell (1996), brittle failure when the wall shear rate reaches a given fraction of the melt&rsquo;s structural relaxation rate, swept over 10<sup>-5</sup> to 10<sup>-3</sup>; there a classifier first decides whether the flow fragments at all, at 99.6 % accuracy, and then one of two regressors answers, at 5.9 % for the fragmenting branch and 1.7 % for the unfragmented one. The threshold matters: moving A1 from 0.70 to 0.85 lowers the mass eruption rate by a third at the default settings, and at 0.80 it agrees with the independent fixed-criterion network to 2 %. A fourth patched criterion, gas overpressure after Spieler et al. (2004), is implemented but inert in this build, because MAMMA&rsquo;s relaxed two-pressure closure leaves the two phases within 10<sup>-5</sup> Pa of each other.</p>
+      <h4>Gas-particle slip above fragmentation</h4>
       <p>Above fragmentation the exsolved gas travels faster than the pyroclasts it is
-      carrying. This page used to lock them together, and that single assumption was most
-      of its disagreement with MAMMA. The relative velocity now comes from MAMMA&rsquo;s own
+      carrying. Earlier versions of this page assumed a single velocity, and that assumption
+      accounted for most of their disagreement with MAMMA. The relative velocity now comes from MAMMA&rsquo;s own
       drag balance on a 1 mm particle at <code>C<sub>D</sub> = 0.8</code>, solved at
-      equilibrium because that drag relaxes over about a third of a metre, so the flow is
-      always sitting on it. Gas that moves faster spends less time in the conduit, so less
+      equilibrium because the drag relaxes over about a third of a metre, so the flow stays
+      close to it. Gas that moves faster spends less time in the conduit, so less
       of it is in place at any instant, the mixture is denser than a single-velocity model
       computes, and the eruption chokes at a lower rate.</p>
-      <h4>Three phases that compress</h4>
+      <h4>Compressible phases</h4>
       <p>MAMMA carries the melt, the crystals and the dissolved water as stiffened gases at
       the magma&rsquo;s own temperature, not as fixed densities. The differences are large
       and they do not cancel: at 180 MPa and 1159 K its crystals are 3220 kg/m<sup>3</sup>
-      where this page assumed 2790, and its dissolved water is 494 where this page assumed
-      1000. Between them they fix how much water a kilogram of magma actually holds.
+      where earlier versions assumed 2790, and its dissolved water is 494 where they assumed
+      1000. Together they determine how much water a kilogram of magma holds.
       MAMMA&rsquo;s melt is 50.9% of the condensed phase by mass; the old constants gave
-      55.2%, so this page carried about 9% too much water and exsolved about 9% too much
-      gas the whole way up.</p>
-      <h4>Choking on the right sound speed</h4>
-      <p>A magma chokes when it reaches the speed of sound of the mixture, and which sound
-      speed you mean matters. MAMMA uses the <b>frozen</b> one, the compressibility of each
-      phase weighted by volume fraction, with no exsolution inside the derivative. This page
+      55.2%, so earlier versions carried about 9% too much water and exsolved about 9% too
+      much gas throughout the ascent.</p>
+      <h4>Which sound speed sets choking</h4>
+      <p>A magma chokes when it reaches the speed of sound of the mixture, and the choice of sound
+      speed matters. MAMMA uses the <b>frozen</b> one, the compressibility of each
+      phase weighted by volume fraction, with no exsolution inside the derivative. Earlier versions
       used the equilibrium one, which lets gas come out of solution as the pressure is
       perturbed and is therefore much slower, so the conduit choked while it was still at
       high pressure. MAMMA&rsquo;s own 657 explosive vent states sit at a median Mach
       0.96 on the frozen one.</p>
-      <h4>How close the conduits are</h4>
-      <p>Those three go in together or not at all: each one alone makes the agreement worse,
-      because their errors were partly cancelling. Together, as medians over the reference runs:</p>
+      <h4>Agreement with MAMMA: conduit</h4>
+      <p>The three corrections work only together: each alone makes the agreement worse,
+      because their errors partly cancelled. Together, as medians over the reference runs:</p>
       <div class="scroll"><table class="tbl">
         <tr><th>at the vent, live / MAMMA</th><th>single velocity, old grid</th><th>now, old box</th><th>now, whole grid</th></tr>
         <tr><td>mass eruption rate</td><td>1.130</td><td>0.978</td><td><b>0.982</b></td></tr>
@@ -646,22 +646,22 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <tr><td>porosity</td><td>0.998</td><td>1.000</td><td><b>1.000</b></td></tr>
       </table></div>
       <p>The first column is the single-velocity version against the 200 explosive runs of the
-      grid this page used to carry. The other two are the current model against the rebuilt
+      grid used by earlier versions. The other two are the current model against the rebuilt
       grid: its 243 explosive runs inside that old box, 3.5 to 6.5 wt% and 15 to 50 m, and
-      all 657 across 2 to 8 wt% and 15 to 100 m. MAMMA&rsquo;s own vent state is only good
+      all 657 across 2 to 8 wt% and 15 to 100 m. MAMMA&rsquo;s own vent state is accurate only
       to a few percent, because the vent sits on the choke point: between 500, 1000 and 2000
       grid cells its vent pressure moves by 5 to 15% and its eruption rate by 1 to 2%.
       The live vent is quoted a fixed 0.1% of the flux below its own choke, the one
-      numerical setting chosen against MAMMA: any closer and the exit velocity starts
-      jumping to the sound speed as a slider moves, any further and it drifts low.</p>
+      numerical setting chosen against MAMMA: any closer and the exit velocity jumps
+      towards the sound speed as a slider moves; any further and it drifts low.</p>
       <p><b>Nothing in the physics is fitted.</b> An earlier version of the slip needed a calibration
       constant; once the phase densities were MAMMA&rsquo;s own, the bare drag balance
-      reproduced its slip to within about three percent at the median and the constant went
-      away. What is left sits at small conduit radius and low chamber pressure, where the
-      eruption rate still runs 17 to 37% low, worst at 15 m and 100 MPa. MAMMA also lets bubbles sit overpressured relative to the melt,
-      which turns out not to matter here: in these runs the two pressures are equal to every
+      reproduced its slip to within about three percent at the median and the constant was
+      no longer needed. The remaining differences are at small conduit radius and low chamber
+      pressure, where the eruption rate is still 17 to 37% low, worst at 15 m and 100 MPa. MAMMA also lets bubbles sit overpressured relative to the melt,
+      which has no effect here: in these runs the two pressures are equal to every
       printed digit at every point along the conduit.</p>
-      <h4>How close the plumes are</h4>
+      <h4>Agreement with PLUME-MoM-TSM</h4>
       <p>The live column and the reference runs now use the same closure and the same
       air: entrainment <code>0.09</code> along the plume and <code>0.6</code> for the
       wind, and one atmosphere, supplied to PLUME-MoM-TSM as a profile card rather than
@@ -679,8 +679,8 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       this page claiming a column where PLUME-MoM-TSM finds none. On the two IAVCEI
       intercomparison cases the repository ships, run through both codes on the
       intercomparison&rsquo;s own sounding, the strong plume comes out at 37.8 km against
-      38.0 km and the weak plume at 5.46 km against 5.81 km. The weak plume is the hard
-      one: its wind reaches 85 m/s and veers with height, and this page carries a single
+      38.0 km and the weak plume at 5.46 km against 5.81 km. The weak plume is the harder
+      case: its wind reaches 85 m/s and veers with height, and this page carries a single
       downwind direction where PLUME-MoM-TSM carries two.</p>
 
       <p>The 16,088 chained columns answer only at their own grid corners and four wind speeds,
@@ -689,42 +689,42 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       full wind profile, humidity, grain size and both entrainment coefficients. A
       classifier decides collapse and three regressors give the top, the neutral buoyancy
       level and the umbrella radius; held-out errors are 0.27 %, 0.30 % and 0.43 %, with
-      collapse right 99.9 % of the time. Feeding it the live model&rsquo;s own numbers does
-      not work, and it is worth seeing why: the campaign sampled the wind entrainment
+      collapse right 99.9 % of the time. Feeding it the live model&rsquo;s own settings directly does
+      not work: the campaign sampled the wind entrainment
       coefficient over 0.20 to 0.45 and the jet half width over 1 to 8 km, while this page
       runs 0.6 through 9 km, so two of the fifteen inputs sit outside the box the network
-      was trained in and the tops come back 11 % low, worse the windier it gets. The page
+      was trained in and the tops come back 11 % low, more so in stronger wind. The page
       therefore maps its single wind control onto the nearest profile inside that box, and
       the mapping is calibrated against the chained runs rather than assumed. It was
       calibrated on the 799 columns of the old main grid; against the 2,628 columns of the
       rebuilt one the top runs 0.4 % high, the middle 80 % falling between 2.3 % low and
       1.3 % high, within 0.7 % at every wind speed, with the neutral buoyancy level 0.8 % low
       and collapse agreeing 94.8 % of the time. Of the 137 disagreements, 131 are columns the
-      reference collapses and the network keeps up, every one of them in wind (24 at 10 m/s,
+      reference collapses and the network keeps buoyant, every one of them in wind (24 at 10 m/s,
       45 at 20 and 62 at 40) and most from conduits 36 m and wider. <b>The network is a reference curve, not the live answer</b>: the tiles
       are always the browser model, and the network fills the second line where no chained
       run covers the setting.</p>
       <h4>Chemistry</h4>
-      <p>The Chemistry tab is <code>MELTS</code>, built from source from <code>magmasource/MAGMA</code>: rhyolite-MELTS 1.0.2, isothermal decompression of each of the six named magmas on all five oxygen buffers (NNO standing in for FMQ+1), at seven water contents from 2 to 8 wt% and at temperatures across the whole slider, 1,704 cells in all. Crystal fraction, dissolved water and melt composition all come from it. Whether rhyolite-MELTS converges on a given path turns out to be a numerical accident rather than a phase boundary: the same cell fails on one pressure ladder and converges on a ladder jittered by 1.5%, and the solver has three failure modes, a status code, an <code>abort()</code> that kills the process, and an occasional hang. A fourth does not announce itself: on about a fifth of ladders a node stops moving and returns the same state, to the fourth decimal, at every remaining pressure. Each cell is therefore run on six ladders, five of them jittered, under a wrapper that restarts after an abort and times out a hang; a ladder ends where its state stops changing; any level whose melt holds far more water than that magma&rsquo;s fluid-saturated melts do at the same pressure is dropped; and the surviving ladders are pooled only where they agree on the crystal fraction, since a restart can re-enter on a different metastable assemblage. Cells left thin got up to 30 more ladders, some started at each pressure by cooling to the target temperature, which reaches the same equilibrium from a melt-rich first guess. 1,667 of the 1,704 cells have a path, and the gaps that remain are real: Pinatubo dacite at 5 wt% water and 780 &deg;C, for one, fails below about 1000 bar however MELTS is started. A second source sits beside that table: a <b>chemistry network</b> trained on an ARCHER2 Sobol campaign of 1,114,112 decompression paths, 64 pressures each, of which 92.8 % converged. It is staged rather than flat: a classifier picks the silicate assemblage, then one small regressor per assemblage returns the melt, which is what lets it follow the phase-in discontinuities that a single smooth network averages across. Held-out mean errors are 0.019 on crystal fraction, 0.09 wt% on dissolved water, 0.38 wt% on melt SiO2, 6 kg/m<sup>3</sup> on melt density and 0.09 dex on viscosity, with the assemblage right 90 % of the time. Against 799 levels of real rhyolite-MELTS run on the campaign's own manifold, at points the network had never seen, crystal fraction is within 0.009 at the median and 0.043 at the ninetieth percentile, viscosity within 0.13 dex. Confidence turns out not to be a reliable warning, since the few badly wrong levels come with the classifier sounding sure, so the page also drops any level where the answer breaks what equilibrium decompression cannot do, water going back into the melt or crystals melting back as pressure falls, and leaves a gap rather than a plausible lie. The table answers for the six named magmas, because it is real MELTS at their published compositions; the network answers for any composition you type in, for the generic magma, and for the mixed H<sub>2</sub>O-CO<sub>2</sub> calibration, which the table does not have. Composition reaches the network through two coordinates on a manifold built from thirteen anchor magmas, so a composition it cannot reach exactly is reported with the size of that miss: Mount St Helens, Pinatubo and Vesuvius land within about 0.3 wt% and Oruanui within 0.7 wt%, while the two Fuego glasses sit about 2 wt% off, mostly in Al<sub>2</sub>O<sub>3</sub> and FeO. <b>The melt viscosity does not come from MELTS&rsquo;s own viscosity column.</b> That column is Shaw (1972), in poise; on these melts it sits a median 0.17 dex below Giordano, 80 % of them between 0.45 dex below and 0.25 dex above. The page recomputes the viscosity from the MELTS melt composition and dissolved water with the same Giordano port the rest of the page uses, so one viscosity model runs through the chamber, the conduit and the coupling.</p>
+      <p>The Chemistry tab is <code>MELTS</code>, built from source from <code>magmasource/MAGMA</code>: rhyolite-MELTS 1.0.2, isothermal decompression of each of the six named magmas on all five oxygen buffers (NNO standing in for FMQ+1), at seven water contents from 2 to 8 wt% and at temperatures across the whole slider, 1,704 cells in all. Crystal fraction, dissolved water and melt composition all come from it. Whether rhyolite-MELTS converges on a given path turns out to be a numerical accident rather than a phase boundary: the same cell fails on one pressure ladder and converges on a ladder jittered by 1.5%, and the solver has three failure modes, a status code, an <code>abort()</code> that kills the process, and an occasional hang. A fourth is silent: on about a fifth of ladders a node stops moving and returns the same state, to the fourth decimal, at every remaining pressure. Each cell is therefore run on six ladders, five of them jittered, under a wrapper that restarts after an abort and times out a hang; a ladder ends where its state stops changing; any level whose melt holds far more water than that magma&rsquo;s fluid-saturated melts do at the same pressure is dropped; and the surviving ladders are pooled only where they agree on the crystal fraction, since a restart can re-enter on a different metastable assemblage. Cells with few surviving ladders received up to 30 more, some started at each pressure by cooling to the target temperature, which reaches the same equilibrium from a melt-rich first guess. 1,667 of the 1,704 cells have a path, and the gaps that remain are real: Pinatubo dacite at 5 wt% water and 780 &deg;C, for one, fails below about 1000 bar however MELTS is started. A second source sits beside that table: a <b>chemistry network</b> trained on an ARCHER2 Sobol campaign of 1,114,112 decompression paths, 64 pressures each, of which 92.8 % converged. It is staged rather than flat: a classifier picks the silicate assemblage, then one small regressor per assemblage returns the melt, which is what lets it follow the phase-in discontinuities that a single smooth network averages across. Held-out mean errors are 0.019 on crystal fraction, 0.09 wt% on dissolved water, 0.38 wt% on melt SiO2, 6 kg/m<sup>3</sup> on melt density and 0.09 dex on viscosity, with the assemblage right 90 % of the time. Against 799 levels of real rhyolite-MELTS run on the campaign's own manifold, at points the network had never seen, crystal fraction is within 0.009 at the median and 0.043 at the ninetieth percentile, viscosity within 0.13 dex. The classifier's confidence is not a reliable warning, since the few badly wrong levels come with high confidence, so the page also drops any level where the answer breaks what equilibrium decompression cannot do, water going back into the melt or crystals melting back as pressure falls, and leaves a gap rather than a plausible but wrong value. The table answers for the six named magmas, because it is real MELTS at their published compositions; the network answers for any composition you type in, for the generic magma, and for the mixed H<sub>2</sub>O-CO<sub>2</sub> calibration, which the table does not have. Composition reaches the network through two coordinates on a manifold built from thirteen anchor magmas, so a composition it cannot reach exactly is reported with the size of that miss: Mount St Helens, Pinatubo and Vesuvius land within about 0.3 wt% and Oruanui within 0.7 wt%, while the two Fuego glasses sit about 2 wt% off, mostly in Al<sub>2</sub>O<sub>3</sub> and FeO. <b>The melt viscosity does not come from MELTS&rsquo;s own viscosity column.</b> That column is Shaw (1972), in poise; on these melts it sits a median 0.17 dex below Giordano, 80 % of them between 0.45 dex below and 0.25 dex above. The page recomputes the viscosity from the MELTS melt composition and dissolved water with the same Giordano port the rest of the page uses, so one viscosity model runs through the chamber, the conduit and the coupling.</p>
 
       <p>Carbon dioxide needed a campaign of its own, because rhyolite-MELTS 1.0.2 has no
       CO<sub>2</sub> in it. A second network was trained on MELTS <b>1.2.0</b> in its
       mixed-volatile mode, with dissolved CO<sub>2</sub> in ppm as a seventh input, and the
-      sidebar switches between them. Its first version was wrong in an instructive way: the
+      sidebar switches between them. Its first version contained an instructive error: the
       CO<sub>2</sub> column had been standardised before training rather than carried as
-      ppm, and the network had quietly learned a single world at the design&rsquo;s mean of
-      about 2,600 ppm, so it put 0.25 wt% of fluid into a magma with no carbon in it at
+      ppm, and the network had in effect learned a single CO<sub>2</sub> content, the design&rsquo;s
+      mean of about 2,600 ppm, so it put 0.25 wt% of fluid into a magma with no carbon in it at
       all. Retrained on raw ppm it lands within 0.01 wt% of real MELTS at zero and within
-      0.006 at 3,000. What the extra axis buys, measured across 4,400 levels of this
+      0.006 at 3,000. What the extra input adds, measured across 4,400 levels of this
       page&rsquo;s own pressure grid: almost all of the carbon goes straight into the fluid
       phase, 0.31 wt% of fluid for the 0.30 wt% you add at 3,000 ppm, rising to 0.48 above
       500 bar, while dissolved water falls 0.03 wt% and crystal fraction and viscosity
       barely move. That is right for a silicic melt at these pressures, where CO<sub>2</sub>
-      solubility is a few hundred ppm at most. What it costs is that the two calibrations do
+      solubility is a few hundred ppm at most. The cost is that the two calibrations do
       not agree with each other at zero CO<sub>2</sub>, differing by 0.10 wt% of fluid at the
-      median and 0.49 at p90, about the sum of their own held-out errors, as two independent
-      fits to the same physics should. So the water-only calibration stays the default, and
-      the CO<sub>2</sub> mode is there for the trend it draws as the slider moves rather than
+      median and 0.49 at p90, about the sum of their own held-out errors, as expected for two independent
+      fits to the same physics. The water-only calibration therefore remains the default, and
+      the CO<sub>2</sub> mode is intended for the trend it shows as the slider moves rather than
       as a correction to the numbers beside it.</p>
       <h4>Groundwater</h4>
       <h4>How the carbon reaches the conduit</h4>
@@ -742,16 +742,16 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       slider is a statement about how far equilibrium crystallisation runs before eruption,
       and carbon leaving the melt is not a crystallisation question. At 5,000 ppm the
       effect on the default magma is a 6 % higher mass eruption rate, a 13 % higher vent
-      velocity and fragmentation about 280 m deeper. <b>The column model does not yet know
-      about it</b>: the plume still treats the whole gas phase as water vapour, which
+      velocity and fragmentation about 280 m deeper. <b>The plume model does not yet include
+      it</b>: it still treats the whole gas phase as water vapour, which
       overstates its heat capacity slightly for a carbon-rich magma, and the conduit
       surrogate has no carbon axis, so the dashed MAMMA curve is answering the no-carbon
       question whenever this is switched on.</p>
 
-      <h4>Two solver faults found by pushing the sliders</h4>
-      <p>Both showed up as the reported vent velocity jumping about twenty per cent, back
-      and forth, as any slider moved by a fraction of a per cent while the eruption rate
-      beside it stayed smooth. Twenty per cent is the slip factor, which was the clue.
+      <h4>Two solver faults found in testing</h4>
+      <p>Both appeared as the reported vent velocity jumping by about twenty per cent as a
+      slider moved by a fraction of a per cent, while the eruption rate beside it stayed
+      smooth. Twenty per cent is the slip factor, which identified the cause.
       First, the flux is found by bisection on a coarse pressure step and the profile is
       then drawn on a fine one, and the two do not always agree about whether the last
       flux reaches the surface: the fine march can choke a few metres short. The state
@@ -761,11 +761,11 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       last metres before the choke the drag balance asks for a relative velocity large
       enough to drive one phase velocity negative, and the bisection on the in-place gas
       fraction then has no bracket at all. The code fell back to no slip, which is both
-      the wrong answer and a discontinuous one. It now walks the relative velocity back
-      toward zero until the balance can be solved, which is continuous in every direction
+      the wrong answer and a discontinuous one. It now reduces the relative velocity
+      towards zero until the balance can be solved, which is continuous in every direction
       and never overstates the slip.</p>
 
-      <p>MAMMA&rsquo;s <code>TOTAL_WATER_INFLUX</code> is not a total: it is a flux per metre of conduit circumference, and the code multiplies it by the perimeter. Measured against MAMMA&rsquo;s own mass balance the added flux is <code>2&pi;Rq</code> to within one percent, so the water added grows with conduit radius. Both models here use that convention, and the sidebar shows the resulting kilograms per second rather than the raw namelist number. MAMMA carries the injected water as a separate liquid phase that boils; this page mixes it in as steam at magma temperature, which is the cruder half of the disagreement above.</p>
+      <p>MAMMA&rsquo;s <code>TOTAL_WATER_INFLUX</code> is not a total: it is a flux per metre of conduit circumference, and the code multiplies it by the perimeter. Measured against MAMMA&rsquo;s own mass balance the added flux is <code>2&pi;Rq</code> to within one percent, so the water added grows with conduit radius. Both models here use that convention, and the sidebar shows the resulting kilograms per second rather than the raw namelist number. MAMMA carries the injected water as a separate liquid phase that boils; this page mixes it in as steam at magma temperature, which is the cruder of the two treatments.</p>
       <h4>What is measured and what you are assuming</h4>
       <p>Hover any control or any tile and it says which of three things the number is.
       <b>Measured</b> means it comes from a published analysis of that eruption and the
@@ -774,21 +774,20 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
       real summit for the four historical eruptions and an informed guess for Vesuvius AD 79
       and Oruanui, where the edifice height is not constrained. <b>You choose</b> is
       everything else, and it is most of the page: dissolved water, chamber pressure, crystal
-      fraction, conduit radius and length, wind. Nobody measured any of those for these
+      fraction, conduit radius and length, wind. None of them was measured for these
       eruptions. <b>Computed</b> is what the two models return.</p>
-      <p>Two of those deserve naming. The dissolved water is a fraction <b>of the melt</b>,
+      <p>Two of them need care. The dissolved water is a fraction <b>of the melt</b>,
       which is how melt inclusion data is quoted, so at 0.40 crystals 4.5 wt% in the melt is
       about 2.5 wt% of the bulk magma. The crystal fraction is a <b>volume</b> fraction
       <b>in the chamber, before ascent</b>, so it is phenocrysts and not the crystallinity
       at the vent; with crystallisation on the way up switched off it is carried unchanged
-      to the surface, which is what MAMMA assumes. The chamber pressure now reports the
-      overpressure against lithostatic beside the slider, and turns red when you go below it.
-      Fuego does, at its default settings, and the tooltip explains why: the pressure that
-      reproduces the observed 2018 eruption rate is lithostatic at about 3.9 km, not at the
-      5291 m every precomputed run is fixed at.</p>
+      to the surface, which is what MAMMA assumes. The chamber pressure slider reports the
+      overpressure against lithostatic and turns red below it, because a chamber below the
+      weight of the rock above it would be closing rather than erupting. Fuego opens 5 MPa
+      above lithostatic, where an 11 m conduit reproduces the 2018 eruption rate.</p>
       <h4>Composition</h4>
       <p>The last option in the magma list takes ten oxides you type in and runs them through the same model, with no precomputed reference behind it. Fuego&rsquo;s two entries are matrix glass rather than whole rock, which is the right input for a melt viscosity model but means the numbers describe the melt between the crystals, not the erupted magma. It also means the glass has already been through whatever crystallised on the way up, so crystallisation on the way up, started from it, counts that growth a second time.</p>
-      <p>Choosing a named magma switches the melt viscosity to <code>Giordano, Russell &amp; Dingwell (2008)</code> on that magma&rsquo;s published oxide analysis, in both models, and brings the volcano with it: its published pre-eruptive temperature, its summit elevation, and a conduit it can actually erupt through. That last one matters. The Fuego glass in the 30 m conduit the generic grid uses runs at 3&times;10<sup>8</sup> kg/s and leaves the vent at porosity 0.67, well under the 0.80 this model fragments at, so Fuego used to report no column at all. At 15 m and 100 MPa it gives 9.6&times;10<sup>6</sup> kg/s and a column at 15.4 km above sea level, which is the eruption 3 June 2018 had. The reference runs for each magma are chained from that volcano&rsquo;s own summit, not the generic 1500 m, so a 15.4 km column from Fuego is correctly only 11.6 km of plume. Solubility stays on the same Henry&rsquo;s law for every magma, which is a real simplification: phonolite dissolves more water than rhyolite at the same pressure. Crystals are held at 0.40 across the composition box so the composition effect is isolated, which is not each magma&rsquo;s own phenocryst content.</p>
+      <p>Choosing a named magma switches the melt viscosity to <code>Giordano, Russell &amp; Dingwell (2008)</code> on that magma&rsquo;s published oxide analysis, in both models, and sets that volcano&rsquo;s published pre-eruptive temperature, its summit elevation and a conduit geometry suited to it. For Fuego that is an 11 m conduit with the chamber 5 MPa above lithostatic, which gives 9.2&times;10<sup>6</sup> kg/s and a column top 15.3 km above sea level, matching the 15.2 km tracked on 3 June 2018. The reference runs for each magma are chained from that volcano&rsquo;s own summit, not the generic 1500 m, so a 15.3 km column from Fuego is 11.5 km of plume above the vent. Solubility follows the same Henry&rsquo;s law for every magma, a significant simplification: phonolite dissolves more water than rhyolite at the same pressure. Crystals are held at 0.40 across the composition box so the composition effect is isolated, which is not each magma&rsquo;s own phenocryst content.</p>
     </div>
     <div>
       <h4>The precomputed box</h4>
@@ -804,7 +803,7 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         <tr><td>Length</td><td>5291 m</td><td>fixed</td></tr>
         <tr><td>Temperature</td><td>1159 K; box 1023&ndash;1223 K</td><td>5</td></tr>
       </table></div>
-      <p style="margin-top:11px">The other boxes are coarser. The temperature and crystal boxes run at three chamber pressures; the magma box steps water by 1 wt% over radii of 15, 29, 50, 80 and 100 m; the groundwater box still covers only 3.5 to 6.5 wt% and radii of 15, 30 and 50 m. Take a slider outside those ranges and the slate reference curve drops away, because there is nothing to interpolate. The live model keeps going.</p>
+      <p style="margin-top:11px">The other boxes are coarser. The temperature and crystal boxes run at three chamber pressures; the magma box steps water by 1 wt% over radii of 15, 29, 50, 80 and 100 m; the groundwater box still covers only 3.5 to 6.5 wt% and radii of 15, 30 and 50 m. Take a slider outside those ranges and the slate reference curve drops away, because there is nothing to interpolate. The live model still answers.</p>
     </div>
   </div>
 </div>
@@ -1879,9 +1878,9 @@ function noteUnfragmented(axes, vals, V, off, label){
      result. It usually is a result: the solver finds no steady state there. */
   refWhy = "No MAMMA run around this setting converged"
          + (label ? " in the " + label + " box" : "")
-         + ", so there is no precomputed curve to draw. That is the solver failing to find"
-         + " a steady state, not a gap in the sweep. The surrogate still answers in the"
-         + " tiles, because it was trained across the whole box rather than on its corners.";
+         + ", so there is no precomputed curve to draw. This reflects the solver finding no"
+         + " steady state, not a gap in the sweep. The surrogate still answers in the tiles,"
+         + " because it was trained across the whole box rather than only at its corners.";
   refWhyKind = "none";
   return null;
 }
@@ -2042,7 +2041,7 @@ function renderTiles(){
     setTile("p", (v.p/1e5).toFixed(1) + ' <small>bar</small>', near);
     const short = ALFA_FRAG - v.alfa;
     setTile("frag", "none", "<em>stops " + (100*short).toFixed(1)
-      + " points short of 0.80" + (short < 0.03 ? ", a narrow miss" : "") + "</em>");
+      + " points short of 0.80" + (short < 0.03 ? ", close to the threshold" : "") + "</em>");
   } else {
     const why = live.jammed ? "<em>jammed before it fragments</em>" : "<em>no steady solution</em>";
     ["mfr","u","p","frag"].forEach(k => setTile(k, "\u2013", why));
@@ -2076,12 +2075,11 @@ function renderTiles(){
   let unfragHint = "";
   if (live.ok && !live.explosive){
     a.className = "pill warn";
-    a.textContent = "effusive: the flow never fragments";
-    unfragHint = "The flow leaves the vent at porosity " + live.vent.alfa.toFixed(3)
-      + ", below the 0.80 this model fragments at, so there is no column to raise. "
-      + "A narrower conduit or more dissolved water gets there: the gas has to expand "
-      + "enough to tear the melt apart, and a wide conduit at high mass flux does not "
-      + "give it the room.";
+    a.textContent = "effusive: no fragmentation";
+    unfragHint = "The flow leaves the vent near atmospheric pressure at porosity "
+      + live.vent.alfa.toFixed(3) + ", below the 0.80 at which this model fragments, so "
+      + "the eruption is effusive and there is no column. More dissolved water raises "
+      + "that porosity.";
   } else if (!ok){
     a.className = "pill warn";
     a.textContent = live.jammed ? "jammed: crystals reach the packing limit"
@@ -2097,7 +2095,7 @@ function renderTiles(){
     b.className = "pill cool";
     b.textContent = "MAMMA: " + ref.label
       + (ref.cs.cover > 0.999 ? "" : " (" + Math.round(ref.cs.cover*100) + "% covered)")
-      + (S.cryst > 0 ? ", frozen crystals, so not like for like" : "");
+      + (S.cryst > 0 ? ", frozen crystals, so not directly comparable" : "");
   } else {
     b.className = refWhy ? "pill warn" : "pill cool";
     if (refWhyKind === "unfrag") b.textContent = "MAMMA here does not fragment inside the conduit";
@@ -2136,8 +2134,8 @@ function renderTiles(){
               ? " (MAMMA measures " + (100*ref.addfrac).toFixed(0) + "% of the erupted mass)" : "")
            + ", entering between " + S.wzTop + " and " + S.wzBot + " m below the vent."
            + (ref && ref.mfr && live.ok && ref.mfr > 1.6*live.vent.mfr
-              ? " The two models disagree here: MAMMA reads groundwater as unloading the conduit"
-                + " and raising the magma supply, this page reads it as choking the conduit sooner."
+              ? " The two models disagree here: in MAMMA groundwater unloads the conduit and"
+                + " raises the magma supply, whereas in this page it chokes the conduit sooner."
               : "");
     }
     if (S.comp !== "generic" && COMPS[S.comp])
@@ -2159,8 +2157,8 @@ function renderTiles(){
          + ", while the melt is still continuous. Past that the magma stops flowing as a"
          + " liquid, so there is no steady eruption here: a magma this crystalline moves,"
          + " if at all, as a solid plug, which this model does not include."
-         + (S.cryst > 0 ? " Turn crystallisation on the way up down, or the packing limit up,"
-                          + " to find where the flow comes back." : "");
+         + (S.cryst > 0 ? " Reduce crystallisation on the way up, or raise the packing limit,"
+                          + " to find where flow resumes." : "");
   }
   note.textContent = msg;
 }
@@ -2491,15 +2489,15 @@ function panelMelts(){
          : "fraction to 0.04 and viscosity to 0.13 dex at the ninetieth percentile")
       + (mb.kept < mb.pgrid.length
          ? ", and " + mb.kept + " of " + mb.pgrid.length + " pressures are drawn here: "
-           + "the gaps are where the classifier cannot tell which assemblage it is looking at"
-           + (mb.unphysical ? ", or where the answer had water going back into the melt as "
-              + "pressure fell, which equilibrium cannot do" : "") + "."
+           + "the gaps are where the classifier cannot identify the assemblage"
+           + (mb.unphysical ? ", or where the answer had water returning to the melt as "
+              + "pressure fell, which is impossible at equilibrium" : "") + "."
          : ".");
   } else el("melts-lede").textContent = !named
     ? "Pick one of the named magmas: the MELTS paths are computed per composition, so the generic rhyolite and your own analysis have none."
     : (!mb
        ? "MELTS did not converge for " + (COMPS[S.comp].label || S.comp) + " at "
-         + (100*S.h2o).toFixed(1) + " wt% water and " + S.T + " K. It struggles when a magma sits near its solidus, which these magmas often do at their own eruptive temperatures. Move the water or the temperature and the path comes back."
+         + (100*S.h2o).toFixed(1) + " wt% water and " + S.T + " K. It often fails near a magma's solidus, where these magmas sit at their own eruptive temperatures. Changing the water or the temperature restores the path."
        : "Equilibrium decompression of " + (COMPS[S.comp].label || S.comp)
          + " at " + S.T + " K with " + (100*S.h2o).toFixed(1) + " wt% water on "
          + (S.fo2 === FO2_TABLE ? "NNO, the table's FMQ+1 setting" : fo2Name)
@@ -2585,10 +2583,10 @@ function fmtVals(){
     + (over < 0 ? ", which is below lithostatic" : "");
   el("vent-hint").textContent = Math.abs(S.zVent - cv) < 50
     ? (named ? "This volcano's summit. Its PLUME-MoM-TSM runs were chained from here, "
-             + "so the reference holds and both datums are real."
-             : "All the PLUME-MoM-TSM runs were chained at this elevation, so the reference holds.")
+             + "so the reference applies and both height datums are real."
+             : "All the PLUME-MoM-TSM runs were chained at this elevation, so the reference applies.")
     : "The reference plume runs for this magma are chained from " + cv
-      + " m, so their heights are hidden until you come back. The live model follows the slider.";
+      + " m, so their heights are hidden until you return to it. The live model follows the slider.";
   const meltable = S.comp !== "generic" && S.comp !== "custom" && COMPS[S.comp] && GRID.melts;
   el("cryst").disabled = !meltable;
   /* the sweep can only run what the slider can */
@@ -2606,7 +2604,7 @@ function fmtVals(){
             ? " This entry is matrix glass, the melt as it erupted, so it has already been through whatever crystallised on the way up: crystallising it again counts that twice."
             : ""));
   el("beta-hint").textContent = Math.abs(S.beta - AX.beta) < 0.005
-    ? "The main 702-run grid sits here; elsewhere the crystal box answers"
+    ? "The main 702-run grid uses this value; elsewhere the crystal box answers"
     : "Crystal box: coarser in chamber pressure";
   const mm = COMPS[S.comp];
   el("temp-hint").textContent = (S.T - 273.15).toFixed(0) + " degrees C"
@@ -2615,7 +2613,7 @@ function fmtVals(){
   el("comp-hint").textContent = S.comp === "generic"
     ? "Hess & Dingwell (1996), the calibration MAMMA's own example uses"
     : S.comp === "custom"
-      ? "Giordano et al. (2008) on whatever you type. No MAMMA run matches it, so you get the live model alone."
+      ? "Giordano et al. (2008) on the analysis you enter. No MAMMA run matches it, so only the live model answers."
       : (COMPS[S.comp] ? COMPS[S.comp].src : "");
   if (S.comp === "custom") readOwn();
 }
@@ -2695,7 +2693,7 @@ function readOwn(){
   if (!(tot > 90) || !(tot < 102)){
     S.ownOx = null; out.className = "own-out bad";
     out.textContent = "Those ten sum to " + tot.toFixed(1)
-      + " wt%. An anhydrous major-element analysis should land between 90 and 102.";
+      + " wt%. An anhydrous major-element analysis should sum to between 90 and 102.";
     return;
   }
   if (!(ox[0] > 30) || !(ox[0] < 85)){
@@ -3651,56 +3649,23 @@ const TIP = {
     b:"Ten major oxides and a pre-eruptive temperature, both taken from a published "
      +"analysis of that eruption and cited under the menu. They set the melt viscosity "
      +"through Giordano, Russell &amp; Dingwell (2008) and, on the Chemistry tab, the MELTS "
-     +"phase equilibria.<br><br><b>Nothing else about the eruption comes with them.</b> "
-     +"The water, the pressure, the crystals and the conduit below are yours to choose." },
+     +"phase equilibria.<br><br><b>No other property of the eruption follows from them.</b> "
+     +"The water, the pressure, the crystals and the conduit below are choices." },
 
   h2o: { k:"chosen", t:"Dissolved water in the melt",
-    b:"Water dissolved in the <b>melt phase</b> in the chamber, as a mass fraction of the "
-     +"melt, not of the whole magma. That distinction bites: at 0.40 crystals, 4.5 wt% in "
-     +"the melt is about 2.5 wt% of the bulk magma. Melt inclusion data is quoted the same "
-     +"way, so the two are comparable.<br><br>It is the single strongest control on whether "
-     +"the eruption is explosive: it sets how much gas can come out of solution and how far "
-     +"down the conduit exsolution starts." },
+    b:"Water dissolved in the <b>melt phase</b> in the chamber, as a mass fraction of the melt, not of the whole magma. The distinction matters: at 0.40 crystals, 4.5 wt% in the melt is about 2.5 wt% of the bulk magma. Melt inclusion data are quoted the same way, so the two are comparable.<br><br>With temperature, it is a primary control on explosive behaviour: it sets how much gas can exsolve and how deep in the conduit exsolution begins." },
 
   pch: { k:"chosen", t:"Chamber pressure",
-    b:"Absolute pressure at the base of the conduit, where the magma starts. Lithostatic at "
-     +"this depth is about 135 MPa, so anything above that is <b>chamber overpressure</b>, "
-     +"which is what actually drives the eruption; the current overpressure is shown beside "
-     +"the slider. Nobody measures this directly. It is inferred, usually from melt "
-     +"inclusion saturation pressures, and here it is simply yours to set.<br><br>Below "
-     +"lithostatic the slider turns red: a chamber at less than the weight of the rock above "
-     +"it would be closing, not erupting. Fuego opens 5 MPa above it." },
+    b:"Absolute pressure at the base of the conduit, where the magma starts. Lithostatic at this depth is about 135 MPa, so anything above that is <b>chamber overpressure</b>, which drives the eruption; the current overpressure is shown beside the slider. It is not measured directly: it is usually inferred from melt inclusion saturation pressures, and here it is a choice.<br><br>Below lithostatic the slider turns red, because a chamber at less than the weight of the rock above it would be closing, not erupting. Fuego opens 5 MPa above lithostatic." },
 
   beta: { k:"chosen", t:"Crystal fraction",
-    b:"Crystal <b>volume</b> fraction of the bubble-free magma <b>in the chamber, before "
-     +"ascent begins</b>: the phenocryst content. It is not the crystallinity at the vent "
-     +"and it does not include microlites grown on the way up.<br><br>With crystallisation "
-     +"on the way up switched off it is <b>held at this value all the way to the surface</b>, "
-     +"which is the assumption MAMMA makes, so the comparison stays like for like. It "
-     +"stiffens the magma through Costa (2005). In the crystal box about nine in ten MAMMA "
-     +"runs still fragment from 0.25 to 0.40, then 77 % at 0.50; set it at or past the "
-     +"packing limit under Crystallisation and the magma jams in the chamber." },
+    b:"Crystal <b>volume</b> fraction of the bubble-free magma <b>in the chamber, before ascent begins</b>: the phenocryst content. It is not the crystallinity at the vent and does not include microlites grown during ascent.<br><br>With crystallisation on the way up switched off, it is <b>held at this value all the way to the surface</b>, as MAMMA assumes, so the two models remain directly comparable. It stiffens the magma through Costa (2005). In the crystal box about nine in ten MAMMA runs still fragment from 0.25 to 0.40, and 77 % at 0.50; at or above the packing limit set under Crystallisation, the magma jams in the chamber." },
 
   cryst: { k:"chosen", t:"Crystallisation on the way up",
-    b:"Off means the crystal fraction stays frozen at the chamber value, which is what the "
-     +"MAMMA reference runs assume. Turn it up and the precomputed MELTS paths supply the "
-     +"crystals, the dissolved water and the melt composition at every pressure, and this "
-     +"slider is how much of that equilibrium crystallisation you believe actually "
-     +"happens.<br><br>Real magma outruns its own crystallisation, so the honest answer is "
-     +"somewhere between 0 and 1 and no thermodynamic model can tell you where. The slider "
-     +"is you making that assumption out loud.<br><br>Judge it by the ascent time on the "
-     +"Conduit tab: crystals need time to grow. Full equilibrium takes most of these magmas "
-     +"past the packing limit below, and then the magma jams." },
+    b:"Off means the crystal fraction stays at the chamber value, as the MAMMA reference runs assume. Turned up, the precomputed MELTS paths supply the crystals, the dissolved water and the melt composition at every pressure, and the slider sets how much of that equilibrium crystallisation actually takes place.<br><br>Because magma usually ascends faster than crystals can grow, the realistic value lies between 0 and 1, and no thermodynamic model can determine where. The slider makes that assumption explicit.<br><br>Judge it against the ascent time on the Conduit tab: crystals need time to grow. Full equilibrium takes most of these magmas past the packing limit below, and the magma then jams." },
 
   phim: { k:"chosen", t:"Crystals jam at",
-    b:"The crystal <b>volume</b> fraction at which the crystals touch and lock into a "
-     +"framework, the maximum packing fraction. Reach it while the melt is still continuous "
-     +"and the magma stops flowing as a liquid, so the page reports it as jammed instead of "
-     +"solving for an eruption rate. Above fragmentation it no longer matters: the crystals "
-     +"ride inside pyroclasts.<br><br>It depends on the crystals: roughly 0.40 for "
-     +"elongate crystals of similar size, rising towards 0.70 as the sizes spread out "
-     +"(Mader, Llewellin &amp; Mueller 2013). Nobody measured it for these eruptions; the "
-     +"crystal size distribution of the erupted products is where you would look." },
+    b:"The crystal <b>volume</b> fraction at which the crystals touch and lock into a framework, the maximum packing fraction. If it is reached while the melt is still continuous, the magma stops flowing as a liquid and the page reports it as jammed instead of solving for an eruption rate. Above fragmentation it no longer applies: the crystals are carried inside pyroclasts.<br><br>It depends on the crystals: roughly 0.40 for elongate crystals of similar size, rising towards 0.70 as the size distribution broadens (Mader, Llewellin &amp; Mueller 2013). It has not been measured for these eruptions; the crystal size distribution of the erupted products would constrain it." },
 
   temp: { k:"measured", t:"Magma temperature",
     b:"Pre-eruptive temperature from the published source for this magma, cited under the "
@@ -3708,85 +3673,37 @@ const TIP = {
      +"up, so latent heat of crystallisation and viscous dissipation are both ignored." },
 
   rad: { k:"chosen", t:"Conduit radius",
-    b:"Radius of the conduit, held constant with depth. Nobody has measured one. It is the "
-     +"strongest geometric control on mass eruption rate, which climbs roughly as the fourth "
-     +"power of radius in a viscous conduit, so it is the natural thing to tune until the "
-     +"model reproduces an observed eruption rate.<br><br>Fuego opens at 11 m for exactly "
-     +"that reason: with the chamber 5 MPa above the weight of the rock it gives "
-     +"9.2 &times; 10<sup>6</sup> kg/s and a column top 15.3 km above sea level, the 15.2 km "
-     +"the Washington VAAC tracked on 3 June 2018. It is a tuned number, not a measured one." },
+    b:"Radius of the conduit, held constant with depth. It has not been measured for any of these eruptions. It is the strongest geometric control on mass eruption rate, which rises roughly as the fourth power of radius in a viscous conduit, so it is the usual parameter to tune until the model reproduces an observed eruption rate.<br><br>Fuego opens at 11 m for this reason: with the chamber 5 MPa above the weight of the rock it gives 9.2 &times; 10<sup>6</sup> kg/s and a column top 15.3 km above sea level, close to the 15.2 km the Washington VAAC tracked on 3 June 2018. It is a tuned value, not a measured one." },
 
   len: { k:"chosen", t:"Conduit length",
-    b:"Vertical distance from the chamber to the vent, so it sets the depth the magma starts "
-     +"from and, with the density, the lithostatic pressure there. Fixed at 5291 m because "
-     +"every precomputed MAMMA run used that value; move it and the reference curves drop "
-     +"out.<br><br>Nobody knows it for Fuego either: Liu et al. (2020) model "
-     +"crystallisation before ascent at 200 to 400 MPa, deeper than this. "
-     +"With the chamber held at the rock's weight, though, the 2018 eruption rate needs a "
-     +"10.7 to 11.2 m conduit for any length from 3 to 9 km, so the answer barely depends "
-     +"on it." },
+    b:"Vertical distance from the chamber to the vent, which sets the depth the magma starts from and, with the rock density, the lithostatic pressure there. Fixed at 5291 m because every precomputed MAMMA run used that value; changing it removes the reference curves.<br><br>It is not known for Fuego either: Liu et al. (2020) model crystallisation before ascent at 200 to 400 MPa, deeper than this. With the chamber held at the weight of the rock, however, the 2018 eruption rate needs a 10.7 to 11.2 m conduit for any length from 3 to 9 km, so the result depends little on it." },
 
   influx: { k:"chosen", t:"Groundwater entering the conduit",
-    b:"An aquifer leaking into the conduit over a window below the vent. MAMMA takes a flux "
-     +"per metre of circumference and multiplies it by the perimeter, so the total scales with "
-     +"conduit radius; the kilograms per second shown are that total. MAMMA boils it as a "
-     +"separate liquid phase, this page mixes it straight in as steam at magma temperature, "
-     +"which is the cruder of the two." },
+    b:"An aquifer leaking into the conduit over a depth window below the vent. MAMMA takes a flux per metre of circumference and multiplies it by the perimeter, so the total scales with conduit radius; the value shown in kilograms per second is that total. MAMMA treats the water as a separate liquid phase that boils; this page adds it directly as steam at magma temperature, the cruder of the two treatments." },
 
   wind: { k:"chosen", t:"Wind at the tropopause",
-    b:"Zero at the ground, rising linearly to this value at 11 km, then falling back to "
-     +"10 m/s at 20 km. That is the profile the PLUME-MoM-TSM reference runs were given, so "
-     +"the live column and the reference fly through the same air.<br><br>It is an idealised "
-     +"profile, <b>not a sounding from the day of the eruption</b>. A real sounding would "
-     +"have shear and veering this cannot represent." },
+    b:"Zero at the ground, rising linearly to this value at 11 km, then falling back to 10 m/s at 20 km. The PLUME-MoM-TSM reference runs used the same profile, so the live column and the reference share one atmosphere.<br><br>It is an idealised profile, <b>not a sounding from the day of the eruption</b>. A real sounding would include shear and veering that this profile cannot represent." },
 
   vent: { k:"measured", t:"Vent elevation",
-    b:"Height of the vent above sea level. It matters twice over: the vent sits in thinner "
-     +"air, which changes how the jet decompresses, and every column height has to be quoted "
-     +"against a datum. Both are shown, above sea level and above the vent." },
+    b:"Height of the vent above sea level. It matters in two ways: the vent sits in thinner air, which changes how the jet decompresses, and every column height must be quoted against a datum. Both are shown, above sea level and above the vent." },
 
   bub: { k:"chosen", t:"Bubbles and viscosity",
-    b:"Bubbles can either stiffen a magma or lubricate it depending on how fast it is being "
-     +"sheared, through the capillary number. Llewellin &amp; Manga (2005) captures both "
-     +"limits. The MAMMA reference runs were made with this switched off, so leaving it off "
-     +"keeps the comparison honest and turning it on is an experiment." },
+    b:"Bubbles can either stiffen a magma or lubricate it, depending on how fast it is sheared, through the capillary number. Llewellin &amp; Manga (2005) captures both limits. The MAMMA reference runs were made with this off, so leave it off for a direct comparison; switching it on is an experiment." },
 
   "t-mfr": { k:"computed", t:"Mass eruption rate",
-    b:"Total mass leaving the vent every second, magma plus exsolved gas. It is the number "
-     +"most often inferred from a real eruption, usually backwards from the column height, "
-     +"so it is the natural thing to check a conduit model against." },
+    b:"Total mass leaving the vent each second, magma plus exsolved gas. It is the quantity most often inferred for a real eruption, usually from the column height, which makes it the natural check on a conduit model." },
 
   "t-u": { k:"computed", t:"Vent velocity",
-    b:"Mass-averaged velocity of the gas-and-particle mixture at the vent. In a sustained "
-     +"explosive eruption the flow is <b>choked</b>: it accelerates until it reaches the "
-     +"local speed of sound of the mixture and cannot go faster, which is what fixes the "
-     +"mass eruption rate for a given conduit.<br><br>Above fragmentation the gas and the "
-     +"pyroclasts do not move together: the gas leads, by 10 to 40 percent here, from MAMMA's own drag balance. That is "
-     +"not cosmetic. Gas that moves faster spends less time in the conduit, so less of it "
-     +"is in place at any instant, the mixture is denser, and the eruption chokes at a "
-     +"lower rate than a single-velocity model would say." },
+    b:"Mass-averaged velocity of the gas-and-particle mixture at the vent. In a sustained explosive eruption the flow is <b>choked</b>: it accelerates until it reaches the local speed of sound of the mixture and cannot go faster, which fixes the mass eruption rate for a given conduit.<br><br>Above fragmentation the gas and the pyroclasts do not move together: the gas leads, by 10 to 40 percent here, from MAMMA's own drag balance. The effect is significant: gas that moves faster spends less time in the conduit, so less of it is present at any instant, the mixture is denser, and the eruption chokes at a lower rate than a single-velocity model predicts." },
 
   "t-p": { k:"computed", t:"Vent pressure",
-    b:"Pressure at the vent. Above atmospheric means the jet leaves <b>overpressured</b> and "
-     +"goes on decompressing above the vent through a shock structure. Neither model here "
-     +"follows that, so both start the plume at the vent as if it had already adjusted." },
+    b:"Pressure at the vent. Above atmospheric, the jet leaves <b>overpressured</b> and continues to decompress above the vent through a shock structure. Neither model resolves that region; both start the plume at the vent as if the jet had already decompressed to atmospheric pressure." },
 
   "t-frag": { k:"computed", t:"Fragmentation depth",
-    b:"Depth below the vent at which the gas volume fraction reaches 0.80 and the magma "
-     +"stops being a bubbly liquid and becomes a gas carrying particles.<br><br>The 0.80 is "
-     +"<b>a modelling threshold, not a measurement</b>. Real fragmentation is a brittle "
-     +"failure that depends on strain rate and overpressure as well as porosity, and the "
-     +"choice of threshold is one of the biggest unexamined assumptions in conduit "
-     +"modelling. Change it and the whole regime map moves.<br><br>A flow can also reach "
-     +"the vent below 0.80 but still at tens of bar. Decompressing takes it past 0.80 at "
-     +"once, so the tile then reads <b>at the vent</b>: it fragments there, as a lava "
-     +"fountain does, and the column is computed from the vent state." },
+    b:"Depth below the vent at which the gas volume fraction reaches 0.80 and the magma changes from a bubbly liquid to a gas carrying particles.<br><br>The 0.80 is <b>a modelling threshold, not a measurement</b>. Real fragmentation is a brittle failure that depends on strain rate and overpressure as well as porosity, and the choice of threshold is one of the largest untested assumptions in conduit modelling: changing it shifts the whole regime map.<br><br>A flow can also reach the vent below 0.80 but still at tens of bar. Decompression takes it past 0.80 at once, so the tile then reads <b>at the vent</b>: the magma fragments there, as in a lava fountain, and the column is computed from the vent state." },
 
   "t-top": { k:"computed", t:"Column top",
-    b:"Highest point the column reaches, reported both above sea level and above the vent. "
-     +"It is set by how much thermal energy the eruption puts into the atmosphere and how "
-     +"hard the wind bends it over.<br><br>The top is what satellites see, but it is not "
-     +"where the ash ends up: that is the umbrella level next door." },
+    b:"Highest point the column reaches, reported both above sea level and above the vent. It is set by how much thermal energy the eruption delivers to the atmosphere and how strongly the wind bends the column.<br><br>Satellites observe the top, but most of the ash spreads at the umbrella level, shown alongside." },
 
   "t-nbl": { k:"computed", t:"Umbrella level",
     b:"Neutral buoyancy level: the height at which the column stops being lighter than the "
@@ -3812,15 +3729,15 @@ const TIP = {
     if (id === "comp"){
       if (named && m.src) return '<p class="cite">' + m.src + '</p>';
       if (S.comp === "custom")
-        return '<p class="cite">Your own ten oxides. Nothing is precomputed behind them, so '
-             + 'the live model answers alone and there is no MAMMA curve to check it against.</p>';
+        return '<p class="cite">Your own ten oxides. No precomputed runs exist for them, so '
+             + 'only the live model answers and there is no MAMMA curve for comparison.</p>';
       return '<p class="cite">A textbook rhyolite on Hess &amp; Dingwell (1996), not an '
            + 'analysis of any eruption. Pick a named magma to get a published composition.</p>';
     }
     if (id === "vent"){
       if (!named || m.vent_m == null)
         return '<p class="cite">The generic grid and the crystal, temperature and groundwater boxes were '
-             + 'all chained from 1500 m, which is a round number, not a volcano.</p>';
+             + 'all chained from 1500 m, a reference elevation rather than a real volcano.</p>';
       return '<p class="cite">' + (m.vent_note || "") + '</p>';
     }
     if (id === "h2o" && named && m.h2o_note)
@@ -3833,16 +3750,14 @@ const TIP = {
     if (id === "pch"){
       const lith = 2600*G*S.L/1e6, over = S.pch/1e6 - lith;
       let c = 'At ' + Math.round(S.L) + ' m under country rock at 2600 kg/m<sup>3</sup>, '
-            + 'lithostatic is ' + lith.toFixed(0) + ' MPa, so you are running '
+            + 'lithostatic is ' + lith.toFixed(0) + ' MPa, giving an overpressure of '
             + (over >= 0 ? '+' : '') + over.toFixed(0) + ' MPa.';
       if (over < 0){
         const zEq = S.pch/(2600*G);
-        c += ' <b>A chamber below lithostatic would close rather than erupt.</b> Read it as '
-           + 'the conduit being too long for this pressure, not the pressure being wrong: '
-           + 'this pressure is lithostatic at ' + (zEq/1000).toFixed(1) + ' km, and a magma '
-           + 'like Fuego is fed from a reservoir about that shallow. Shortening the conduit '
-           + 'to there makes it coherent, but every precomputed run is fixed at 5291 m, so '
-           + 'you lose the MAMMA and PLUME-MoM curves when you move it.';
+        c += ' <b>A chamber below lithostatic would close rather than erupt.</b> This '
+           + 'pressure is lithostatic at ' + (zEq/1000).toFixed(1) + ' km: either raise it, or '
+           + 'shorten the conduit to that depth, at the cost of the MAMMA and PLUME-MoM curves, '
+           + 'which are fixed at 5291 m.';
       }
       return '<p class="cite">' + c + '</p>';
     }
