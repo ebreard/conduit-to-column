@@ -2593,6 +2593,8 @@ function fmtVals(){
   const so = el("sweepvar").querySelector('option[value="cryst"]');
   if (so){
     so.disabled = !meltable;
+    so.textContent = meltable ? "crystallisation on the way up, 0 to 100%"
+                              : "crystallisation on the way up (named magmas only)";
     if (!meltable && el("sweepvar").value === "cryst"){ el("sweepvar").value = "h2o"; syncSweepLabel(); }
   }
   el("cryst-hint").textContent = !meltable
