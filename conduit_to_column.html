@@ -1146,8 +1146,13 @@ function march(Q, P, keep){
     }
     return { dzdp:dzdp, M2:M2, s:s, sl:sl, u:sl.u, mu:mu, add:add };
   };
+  /* alfa is the gas fraction in place, with the slip; afr is the porosity the regime test
+     above uses, without it. They agree below fragmentation. Where the slip switches on,
+     alfa drops back below 0.80 for up to a few hundred metres, so fragmentation is found
+     on afr, where the solver itself fragments, as MAMMA does. */
   const rec = function(k, pp, zz){
-    out.push({ depth: P.L - zz, p:pp, u:k.u, alfa:k.sl.alfa, mu:k.mu, melt:meltViscAt(k.s, P),
+    out.push({ depth: P.L - zz, p:pp, u:k.u, alfa:k.sl.alfa, afr:k.s.alfa, mu:k.mu,
+               melt:meltViscAt(k.s, P),
                beta:k.s.beta, rho:k.sl.rho,
                slip: k.sl.u1 > 0 ? k.sl.u2/k.sl.u1 : 1,
                M: Math.sqrt(k.M2 > 0 ? k.M2 : 0) });
@@ -1185,7 +1190,7 @@ function jammedOr(P, prof, res){
   let jam = null;
   if (prof){
     for (const q of prof){
-      if (q.alfa >= ALFA_FRAG) break;
+      if ((q.afr != null ? q.afr : q.alfa) >= ALFA_FRAG) break;
       if (q.beta >= P.phiM){ jam = { p:q.p, beta:q.beta, depth:q.depth }; break; }
     }
   } else {
@@ -1243,8 +1248,8 @@ function solveConduit(P){
   const v = prof[prof.length - 1];
   let fragDepth = null;
   for (let i = 1; i < prof.length; i++){
-    if (prof[i-1].alfa < ALFA_FRAG && prof[i].alfa >= ALFA_FRAG){
-      const f = (ALFA_FRAG - prof[i-1].alfa)/(prof[i].alfa - prof[i-1].alfa);
+    if (prof[i-1].afr < ALFA_FRAG && prof[i].afr >= ALFA_FRAG){
+      const f = (ALFA_FRAG - prof[i-1].afr)/(prof[i].afr - prof[i-1].afr);
       fragDepth = prof[i-1].depth + f*(prof[i].depth - prof[i-1].depth);
       break;
     }
@@ -1266,14 +1271,14 @@ function solveConduit(P){
      fragmented in the conduit. Only a flow leaving near atmospheric pressure, at most
      twice it (MAMMA's own test for an atmospheric exit), still below 0.80 is effusive. */
   let fragAtVent = false;
-  if (v.alfa < ALFA_FRAG && v.p > 2*PATM){
-    const gv = v.alfa/(1 - v.alfa)*v.p/PATM;
+  if (v.afr < ALFA_FRAG && v.p > 2*PATM){
+    const gv = v.afr/(1 - v.afr)*v.p/PATM;
     fragAtVent = gv/(1 + gv) >= ALFA_FRAG;
   }
   return jammedOr(P, prof, { ok:true, Q:Q, prof:prof, ascent:ascent, vent:{
       p:v.p, u:v.u, alfa:v.alfa, mu:v.mu, mfr:Q*(1 + addV), rho:v.rho, n:s.n,
       slip:v.slip, M:v.M },
-    fragDepth:fragDepth, fragAtVent:fragAtVent, explosive: v.alfa >= ALFA_FRAG || fragAtVent,
+    fragDepth:fragDepth, fragAtVent:fragAtVent, explosive: v.afr >= ALFA_FRAG || fragAtVent,
     pSat: Math.pow(P.xtot/SOLUB, 2) });
 }
 
