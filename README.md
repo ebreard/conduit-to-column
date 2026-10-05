@@ -1,5 +1,16 @@
 # Conduit to Column
 
+## Educational use only
+
+At present, Conduit to Column is an educational tool, not an operational one. It was designed to give students access to complex research models that normally require specialist set-up and high-performance computing (MAMMA, PLUME-MoM-TSM and rhyolite-MELTS), and to illustrate how such models can be coupled: from magma chemistry, through conduit ascent, to the eruption column, with the assumptions of each model passed on to the next.
+
+> [!WARNING]
+> **Not for operational use.** The tool is not intended, validated or suitable for hazard or risk assessment, eruption forecasting, volcano monitoring, aviation advice, emergency management or any other decision that affects people, property or safety. Its results rest on simplified assumptions (a steady state, equilibrium degassing and an idealised wind profile, among others) and may differ substantially from reality. For information on an active volcano, consult the volcano observatory and the civil-protection authorities responsible for it.
+>
+> **Responsibility and liability.** The tool and its results are provided "as is", without warranty of any kind, express or implied, including as to accuracy, completeness or fitness for a particular purpose. Users are solely responsible for their use of the tool and its results, and it is their responsibility not to base any decision on them. To the fullest extent permitted by law, the author, contributors and their institutions accept no liability for any loss, damage or injury, direct or indirect, arising from the use of, or reliance on, the tool or its results. The results do not represent the views of the developers of MAMMA, PLUME-MoM-TSM or rhyolite-MELTS, who are not responsible for how their codes are used or approximated here. This notice is in addition to the disclaimer of warranty and limitation of liability in the MIT licence (`LICENSE`).
+
+## About
+
 A single self-contained HTML page that solves a steady 1D volcanic conduit and a bent-over plume live in the browser, and checks that live solution against real runs of the research codes it is built to approximate. Built for EASC10132, Magmatic & Volcanic Processes, School of GeoSciences, University of Edinburgh.
 
 ## Run it
