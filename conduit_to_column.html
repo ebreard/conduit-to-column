@@ -475,6 +475,15 @@ code.mono{font-family:"IBM Plex Mono", monospace; font-size:11px; background:var
         </div>
         <div class="hint">All other settings stay as they are, so the sweep varies one control at a time.</div>
       </div>
+      <div class="ctl" style="margin-top:14px">
+        <div class="row"><label>Recorded states</label><span class="val" id="rec-n">none yet</span></div>
+        <div class="btns" style="margin-top:9px">
+          <button type="button" id="rec-add">Record this state</button>
+          <button type="button" class="dl" data-k="states">Export recorded states</button>
+          <button type="button" id="rec-clear">Clear</button>
+        </div>
+        <div class="hint">Each click adds the current settings and results as one row, so states set by hand, such as a series of readings, export together as one CSV.</div>
+      </div>
     </div>
 
     <button class="reset" type="button" id="reset">Reset to Mount St Helens, 18 May 1980</button>
@@ -3609,10 +3618,49 @@ el("dl-close").addEventListener("click", function(){
 });
 el("dl-all").addEventListener("click", function(){ const t = el("dl-text"); t.focus(); t.select(); });
 
+/* states set by hand, one row each, exported together */
+const RECORDED = [];
+function stateRow(){
+  const ok = live && live.ok, v = ok ? live.vent : null;
+  const regime = !live ? "no_solution" : live.jammed ? "jammed" : !live.ok ? "no_solution"
+    : !live.explosive ? "effusive" : plume && plume.collapsed ? "collapse" : "buoyant_column";
+  return [S.comp, num(S.h2o), num(S.T), num(S.R), num(S.pch), num(S.beta), num(S.L), num(S.wind),
+          num(S.zVent), regime, v ? num(v.mfr) : "", v ? num(v.u) : "",
+          ok ? (live.fragAtVent ? "0" : live.fragDepth == null ? "" : num(live.fragDepth)) : "",
+          ok && live.explosive && plume && !plume.collapsed ? num(plume.top) : "",
+          ok ? num(live.ascent) : ""];
+}
+function syncRecorded(){
+  const n = RECORDED.length;
+  el("rec-n").textContent = n ? n + (n === 1 ? " state" : " states") : "none yet";
+}
+el("rec-add").addEventListener("click", function(){
+  if (pending){ fmtVals(); computeAll(); }
+  RECORDED.push(stateRow()); syncRecorded();
+});
+el("rec-clear").addEventListener("click", function(){ RECORDED.length = 0; syncRecorded(); });
+function csvStates(){
+  if (!RECORDED.length) return null;
+  const head = "state,magma,water_in_melt_wt_frac,temperature_K,conduit_radius_m,chamber_pressure_Pa,"
+             + "crystal_vol_frac,conduit_length_m,wind_at_tropopause_ms,vent_elevation_m,regime,"
+             + "mass_eruption_rate_kgs,vent_velocity_ms,fragmentation_depth_m,column_top_m_asl,ascent_time_s";
+  return meta(["one row per recorded state, each with its own settings; the settings listed above are"
+               + " those at the moment of export",
+               "regime: buoyant_column | collapse | effusive | jammed | no_solution",
+               "fragmentation_depth_m 0: fragments at the vent as it decompresses; blank: does not fragment",
+               "column_top_m_asl is blank where the column collapses"])
+    + head + "\n" + RECORDED.map(function(r, i){ return (i + 1) + "," + r.join(","); }).join("\n") + "\n";
+}
 Array.prototype.forEach.call(document.querySelectorAll("button.dl"), function(btn){
   btn.addEventListener("click", function(){
     const k = btn.dataset.k;
     let text = null, name = "";
+    if (k === "states"){
+      const t = csvStates();
+      if (t) saveCsv("recorded_states.csv", t);
+      else showCsv("recorded_states.csv", "", "Nothing is recorded yet. Set the controls, click Record this state, repeat for each state you want, then export.");
+      return;
+    }
     if (k === "conduit"){ text = csvConduit(); name = "conduit_profile.csv"; }
     else if (k === "plume"){ text = csvPlume(); name = "plume_profile.csv"; }
     else if (k === "grid"){ text = csvGrid(); name = "mamma_grid.csv"; }
